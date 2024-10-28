@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--passwordはtestpass-->
+<dataset>
+	<user
+	 user_id="11111111-1111-1111-1111-111111111111"
+		email="testuser@example.com"
+		password="$2b$12$RXeMJPTgWvZ.ACZl3Qo5yev1zvcOQPnIrVs.4Ta9x2ge2.xCgcYWm"
+		first_name_kanji="山田"
+		last_name_kanji="太郎"
+		first_name_kana="ヤマダ"
+		last_name_kana="タロウ"
+		gender="F"
+		birth_date="2000-01-01"
+		post_code="000-0000"
+		address="テスト県テスト市テスト町1-1-1"
+		phone_number="09000000000"
+		role="1"/>
+</dataset>
+
