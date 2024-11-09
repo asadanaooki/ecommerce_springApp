@@ -12,3 +12,6 @@ spring:
     init:
       mode: always
       continue-on-error: true
+mybatis:
+    configuration:
+      map-underscore-to-camel-case: true

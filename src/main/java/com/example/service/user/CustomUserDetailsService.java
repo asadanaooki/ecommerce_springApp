@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.example.domain.enums.UserRole;
 import com.example.domain.mapper.UserMapper;
 import com.example.domain.model.User;
 
@@ -29,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user = userMapper.findUserCredentialsByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException(null));
 
-		GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + UserRole.fromCode(user.getRole()).getRoleName());
+		GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName());
 		
 		return new CustomUserDetails(user.getUserId(), username, user.getPassword(),
 				Collections.singletonList(authority));

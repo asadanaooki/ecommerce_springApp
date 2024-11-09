@@ -14,7 +14,8 @@ import com.example.domain.model.User;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class UserMapperTest extends MapperTestBase {
-
+	
+	
 	UserMapperTest() {
 		super(TEST_DATA_FILE_PATH);
 	}
@@ -39,6 +40,7 @@ class UserMapperTest extends MapperTestBase {
 
 	@Test
 	void findUserByEmail_found() {
+	
 		User foundUser = userMapper.findUserCredentialsByEmail(EXISTING_EMAIL).get();
 
 		assertThat(foundUser.getUserId()).isEqualTo(EXPECTED_USER_ID);

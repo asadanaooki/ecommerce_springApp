@@ -14,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import com.example.domain.enums.UserRole;
 import com.example.domain.mapper.UserMapper;
 import com.example.domain.model.User;
 
@@ -37,6 +38,7 @@ class CustomUserDetailsServiceTest {
 		user.setUserId(testUserId);
 		user.setEmail(testUsername);
 		user.setPassword(testPassword);
+		user.setRole(UserRole.USER);
 
 		when(userMapper.findUserCredentialsByEmail(testUsername)).thenReturn(Optional.of(user));
 

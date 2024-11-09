@@ -2,6 +2,7 @@ package com.example.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,6 +21,7 @@ public class SecurityConfig {
 	private final UserDetailsService userDetailsService;
 
 	@Bean
+	@Profile("test")
 	public SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.securityMatcher(new AntPathRequestMatcher("/h2-console/**"))
 				.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll()).csrf(csrf -> csrf.disable())
@@ -29,6 +31,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
+	@Profile("!test")
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.authorizeHttpRequests(authorize -> authorize.requestMatchers("/login").permitAll() // /loginは許可
 				.anyRequest().authenticated()) // その他のリクエストは認証を要求

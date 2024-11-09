@@ -3,6 +3,8 @@ package com.example.domain.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.example.domain.enums.UserRole;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,7 +38,7 @@ public class User {
 	
 	private String phoneNumber;
 	
-	private String role;
+	private UserRole role;
 
 	private LocalDateTime createdAt;
 

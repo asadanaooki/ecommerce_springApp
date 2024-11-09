@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.domain.mapper.UserMapper">
+	<resultMap type="com.example.domain.model.User" id="userResultMap">
+		<result property="role" column="role"
+			javaType="com.example.domain.enums.UserRole" jdbcType="CHAR"
+			typeHandler="com.example.domain.enums.GenericEnumTypeHandler" />
+	</resultMap>
+
 	<select id="findUserCredentialsByEmail"
-		resultType="com.example.domain.model.User">
+		resultMap="userResultMap">
 		select user_id, password, role from `user` where email
-		= #{email}
+		=
+		#{email}
 	</select>
 
 </mapper>
