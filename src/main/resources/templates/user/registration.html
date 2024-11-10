@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>ユーザー登録</title>
+</head>
+<body>
+	<h1>ユーザー登録</h1>
+	<form th:action="@{/user/register}" th:object="${form}" method="post">
+		<div>
+			<label for="email">メールアドレス:</label> <input type="text"
+				th:field="*{email}" />
+			<div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+			</div>
+		</div>
+
+		<div>
+			<label for="password">パスワード:</label> <input type="password"
+				th:field="*{password}" />
+			<div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+		</div>
+
+		<!-- 漢字氏名（姓） -->
+		<div>
+			<label for="lastNameKanji">漢字氏名（姓）:</label> <input type="text"
+				th:field="*{lastNameKanji}" />
+			<div th:if="${#fields.hasErrors('lastNameKanji')}"
+				th:errors="*{lastNameKanji}"></div>
+		</div>
+
+		<!-- 漢字氏名（名） -->
+		<div>
+			<label for="firstNameKanji">漢字氏名（名）:</label> <input type="text"
+				th:field="*{firstNameKanji}" />
+			<div th:if="${#fields.hasErrors('firstNameKanji')}"
+				th:errors="*{firstNameKanji}"></div>
+		</div>
+
+		<!-- カナ氏名（姓） -->
+		<div>
+			<label for="lastNameKana">カナ氏名（姓）:</label> <input type="text"
+				th:field="*{lastNameKana}" />
+			<div th:if="${#fields.hasErrors('lastNameKana')}"
+				th:errors="*{lastNameKana}"></div>
+		</div>
+
+		<!-- カナ氏名（名） -->
+		<div>
+			<label for="firstNameKana">カナ氏名（名）:</label> <input type="text"
+				th:field="*{firstNameKana}" />
+			<div th:if="${#fields.hasErrors('firstNameKana')}"
+				th:errors="*{firstNameKana}"></div>
+		</div>
+
+		<div>
+			<label>性別：</label> <input type="radio" th:field="*{gender}" value="MALE" />男性
+			<input type="radio" th:field="*{gender}" value="FEMALE" />女性
+			<div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
+		</div>
+
+		<!-- 生年月日 -->
+		<div>
+			<label for="birthDate">生年月日:</label> <input type="date"
+				th:field="*{birthDate}" />
+			<div th:if="${#fields.hasErrors('birthDate')}"
+				th:errors="*{birthDate}"></div>
+		</div>
+
+		<!-- 郵便番号 -->
+		<div>
+			<label for="postCode">郵便番号:</label> <input type="text"
+				th:field="*{postCode}" />
+			<div th:if="${#fields.hasErrors('postCode')}" th:errors="*{postCode}"></div>
+		</div>
+
+		<div>
+			<label for="prefectureId">都道府県:</label> <select
+				th:field="*{prefectureId}">
+				<option value="">選択してください</option>
+				<option th:each="p : ${prefectureList}"
+					th:value="${p.prefectureId}" th:text="${p.prefectureName}"></option>
+			</select>
+		</div>
+
+		<!-- 住所1 -->
+		<div>
+			<label for="address1">住所1:</label> <input type="text"
+				th:field="*{address1}" />
+			<div th:if="${#fields.hasErrors('address1')}" th:errors="*{address1}"></div>
+		</div>
+
+		<!-- 住所2 -->
+		<div>
+			<label for="address2">住所2:</label> <input type="text"
+				th:field="*{address2}" />
+			<div th:if="${#fields.hasErrors('address2')}" th:errors="*{address2}"></div>
+		</div>
+
+		<!-- 電話番号 -->
+		<div>
+			<label for="phoneNumber">電話番号:</label> <input type="text"
+				th:field="*{phoneNumber}" />
+			<div th:if="${#fields.hasErrors('phoneNumber')}"
+				th:errors="*{phoneNumber}"></div>
+		</div>
+
+		<button type="submit">登録</button>
+
+	</form>
+
+</body>
+</html>

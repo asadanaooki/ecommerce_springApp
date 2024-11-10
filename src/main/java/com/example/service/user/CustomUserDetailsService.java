@@ -11,17 +11,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.example.domain.mapper.UserMapper;
-import com.example.domain.model.User;
+import com.example.domain.model.entity.User;
+import com.example.domain.model.security.CustomUserDetails;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * 認証処理のために UserDetails オブジェクトを構築する
+ */
 @Service
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 	
+	/**
+	 * null引数を許容しない場合にスローする例外メッセージ
+	 */
 	public final static String NULL_ARGUMENT_MESSAGE = "null cannot be allowed";
+	
+	/**
+	 * ユーザーマッパー
+	 */
 	private final UserMapper userMapper;
 
+	/**
+	 * ユーザー情報を取得し、UserDetails オブジェクトを返します
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Assert.notNull(username, CustomUserDetailsService.NULL_ARGUMENT_MESSAGE);

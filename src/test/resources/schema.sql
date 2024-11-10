@@ -1,5 +1,5 @@
 -- User Table
-CREATE TABLE `user` (
+CREATE TABLE "user" (
     user_id CHAR(36) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password CHAR(60) NOT NULL,
@@ -16,17 +16,17 @@ CREATE TABLE `user` (
     phone_number VARCHAR(15) NOT NULL UNIQUE,
     role CHAR(1) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id)
 );
 
---都道府県テーブル
+----都道府県テーブル
 CREATE TABLE prefecture (
     prefecture_id CHAR(60) PRIMARY KEY,
     prefecture_name VARCHAR(50) NOT NULL,
     display_order INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 

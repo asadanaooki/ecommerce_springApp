@@ -1,4 +1,4 @@
-package com.example.service.user;
+package com.example.domain.model.security;
 
 import java.util.Collection;
 
@@ -7,11 +7,25 @@ import org.springframework.security.core.userdetails.User;
 
 import lombok.Getter;
 
+/**
+ * アプリケーション固有のユーザー情報を管理する
+ */
 @Getter
 public class CustomUserDetails extends User {
 
+	/**
+	 * メールアドレス
+	 */
 	private String email;
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param userId      ユーザーID
+	 * @param email       ユーザーのメールアドレス
+	 * @param password    ユーザーのパスワード
+	 * @param authorities ユーザーの権限情報
+	 */
 	public CustomUserDetails(String userId, String email, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(userId, password, authorities);
