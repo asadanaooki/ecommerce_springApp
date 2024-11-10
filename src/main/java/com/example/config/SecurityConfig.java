@@ -33,8 +33,9 @@ public class SecurityConfig {
 	@Bean
 	@Profile("!test")
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.authorizeHttpRequests(authorize -> authorize.requestMatchers("/login").permitAll() // /loginは許可
-				.anyRequest().authenticated()) // その他のリクエストは認証を要求
+		httpSecurity
+				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/login", "/user/register").permitAll() // /loginは許可
+						.anyRequest().authenticated()) // その他のリクエストは認証を要求
 				.formLogin(form -> form.loginPage("/login").usernameParameter("email").failureUrl("/login?error")
 						.loginProcessingUrl("/process-login").permitAll());
 

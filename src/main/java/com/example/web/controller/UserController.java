@@ -9,22 +9,112 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.service.result.RegistrationResult;
+import com.example.service.user.PrefectureService;
+import com.example.service.user.UserService;
 import com.example.web.form.LoginForm;
+import com.example.web.form.RegistrationForm;
 
+import lombok.AllArgsConstructor;
+
+/**
+ * ユーザー関連のコントローラー
+ */
 @Controller
+@AllArgsConstructor
 public class UserController {
 
+	/**
+	 * ユーザー関連のサービス
+	 */
+	private final UserService userService;
+
+	/**
+	 * 都道府県データ関連のサービス
+	 */
+	private final PrefectureService prefectureService;
+
+	/**
+	 * ログイン画面を表示
+	 * 
+	 * @param form ログイン情報
+	 * @return ログイン画面のテンプレート
+	 */
 	@GetMapping("/login")
 	public String showLoginForm(@ModelAttribute("form") LoginForm form) {
-		return "auth/login";
+		return "user/login";
 	}
 
+	/**
+	 * ログイン処理を行います。
+	 * <p>
+	 * 入力内容のバリデーションを行い、エラーがあればログイン画面を再表示します。 正常であればログイン処理を他のエンドポイントに転送します。
+	 * </p>
+	 * 
+	 * @param form   ログインフォームオブジェクト
+	 * @param result 入力検証の結果
+	 * @param model  ビューに渡すデータ
+	 * @return 次に表示するテンプレートまたは処理
+	 */
 	@PostMapping("/login")
 	public String login(@Valid @ModelAttribute("form") LoginForm form, BindingResult result, Model model) {
 		if (result.hasErrors()) {
-			return "auth/login";
+			return "user/login";
 		}
 		return "forward:/process-login";
 	}
-	
+
+	/**
+	 * ユーザー登録フォームを表示します。
+	 * 
+	 * @param form  ユーザー登録フォームオブジェクト
+	 * @param model ビューに渡すデータ
+	 * @return ユーザー登録画面のテンプレート名
+	 */
+	@GetMapping("user/register")
+	public String showRegistrationForm(@ModelAttribute("form") RegistrationForm form, Model model) {
+		addPrefectureList(model);
+		return "user/registration";
+	}
+
+	/**
+	 * ユーザー登録処理を行います。
+	 * <p>
+	 * 入力内容のバリデーションを行い、エラーがあれば登録画面を再表示します。 正常であれば一時的に登録情報を保存し、成功画面を表示します。
+	 * </p>
+	 * 
+	 * @param form   ユーザー登録フォームオブジェクト
+	 * @param result 入力検証の結果
+	 * @param model  ビューに渡すデータ
+	 * @return 次に表示するテンプレート名
+	 */
+	@PostMapping("user/register")
+	public String registerTmpUser(@Valid @ModelAttribute("form") RegistrationForm form, BindingResult result,
+			Model model) {
+		if (result.hasErrors()) {
+			addPrefectureList(model);
+			return "user/registration";
+		}
+
+		RegistrationResult regResult = userService.registerTempUser(form);
+		// 登録エラー
+		if (regResult.isSuccess() == false) {
+			regResult.getErrors().forEach(model::addAttribute);
+			addPrefectureList(model);
+
+			return "user/registration";
+		}
+
+		return "redirect:/user/registrationSuccess";
+	}
+
+	/**
+	 * 都道府県のリストをモデルに追加します。
+	 * 
+	 * @param model ビューに渡すデータ
+	 */
+	private void addPrefectureList(Model model) {
+		model.addAttribute("prefectureList", prefectureService.getAllPrefectures());
+	}
+
 }

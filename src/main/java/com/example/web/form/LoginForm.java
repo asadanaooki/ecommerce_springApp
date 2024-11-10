@@ -12,13 +12,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginForm {
 
-	@NotBlank(message = "{error.email.required}")
-	@Size(max = 100, message = "{error.email.length}")
-	@Email(message = "{error.email.format}")
+	@NotBlank(message = "{login.failed}")
+	@Size(max = 100, message = "{login.failed}")
+	@Email(message ="{login.failed}")
 	private String email;
 
-	@NotBlank(message = "{error.password.required}")
-	@Size(min = 6, max = 20, message = "{error.password.length}")
-	@Pattern(regexp = "^[a-zA-Z0-9]+$", message = "{error.password.format}")
+	@NotBlank(message = "{login.failed}")
+	@Size(min = 6, max = 20, message = "{login.failed}")
+	@Pattern(regexp = "^[a-zA-Z0-9]+$", message = "{login.failed}")
 	private String password;
 }

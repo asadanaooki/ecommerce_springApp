@@ -12,7 +12,13 @@ spring:
     init:
       mode: always
       continue-on-error: true
+
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    default-enum-type-handler: com.example.domain.model.enums.GenericEnumTypeHandler
+
+#設定値
+registration:
+  expiration-time-minutes: 10
+

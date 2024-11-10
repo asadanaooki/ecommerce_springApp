@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--passwordはtestpass -->
+<dataset>
+	<!-- 北海道地方 -->
+	<prefecture
+		prefecture_id="b2b5c1773047b8ec73e8fdd70b30e090c50ec83b78fc90ad1f248bb58617"
+		prefecture_name="北海道" display_order="1" />
+
+	<!-- 東北地方 -->
+	<prefecture
+		prefecture_id="9a65a31263df283945df02690536cfec0c4cf594760052af6924dd55933e"
+		prefecture_name="青森県" display_order="2" />
+	<prefecture
+		prefecture_id="357ecaef50a3df13173bf0db7b654ce86ea2dab89b4082e869e78aed9d37"
+		prefecture_name="岩手県" display_order="3" />
+	<prefecture
+		prefecture_id="5b47dd168f30820bad054332999ff394c3ece644323e5604829fc125b6e5"
+		prefecture_name="秋田県" display_order="4" />
+	<prefecture
+		prefecture_id="24035e548a68fa105bae5aec595152e5e2be6f3b2d529c830f45aed6a11e"
+		prefecture_name="山形県" display_order="5" />
+	<prefecture
+		prefecture_id="330c08e0336ae87add061f07728f6b0ff8da385a9d76c9c04da1a9465d05"
+		prefecture_name="福島県" display_order="6" />
+	<prefecture
+		prefecture_id="d15ab0f3c2521b27a8c3f21d046a647795e5c5c33d5d3f4887fd0317c66e"
+		prefecture_name="宮城県" display_order="7" />
+
+	<!-- 関東地方 -->
+	<prefecture
+		prefecture_id="73d4f30b5374cb3b5026f91d707d493e341faadc6538b086d88d6c807b88"
+		prefecture_name="茨城県" display_order="8" />
+	<prefecture
+		prefecture_id="2b1983aad8d6c2c4aceeeffc6829f882b44fbd5ae7d45da61be808422145"
+		prefecture_name="栃木県" display_order="9" />
+	<prefecture
+		prefecture_id="43709ebd27ab35a9ba1ea24d1000939faa7e2227ace12d5e2a92c3f96053"
+		prefecture_name="群馬県" display_order="10" />
+	<prefecture
+		prefecture_id="b2dc0b8fcd4fa3c316d4eabad5f93edf7fd2c4c6a0f35990382cd604f2e6"
+		prefecture_name="埼玉県" display_order="11" />
+	<prefecture
+		prefecture_id="f0c18bfd7433fd6322e26c0c49e0816025a8c615bb0d4febb980243c446e"
+		prefecture_name="千葉県" display_order="12" />
+	<prefecture
+		prefecture_id="730e1ddd782050cc63655ee66344bc049efdf794a6c97ef60de82923c104"
+		prefecture_name="神奈川県" display_order="13" />
+	<prefecture
+		prefecture_id="835fa43c44ada31e5088207c176d5dbeb4a24d7ac138ec9bb5bfc356c3a4"
+		prefecture_name="東京都" display_order="14" />
+
+	<!-- 中部地方 -->
+	<prefecture
+		prefecture_id="8584fa5a371d0d0227c7ebbf6116ceee9d9d6465d71dc5281186733212b8"
+		prefecture_name="山梨県" display_order="15" />
+	<prefecture
+		prefecture_id="9d0a36ec14c03151fc319957723cde4526ea48ad05f64d85ae558c90cb54"
+		prefecture_name="新潟県" display_order="16" />
+	<prefecture
+		prefecture_id="35800b6e160687f03a3c4ae22fe00d1fe38e1b9350e622d6667fca3c8e8b"
+		prefecture_name="福井県" display_order="17" />
+	<prefecture
+		prefecture_id="9641ab05ef7b681928d1b5ee5acd4940469fdd4b62bd62b2c2c83414a71d"
+		prefecture_name="静岡県" display_order="18" />
+	<prefecture
+		prefecture_id="6560ab4ee0256e63d520d48890ad388d851784981c46c233713656412632"
+		prefecture_name="長野県" display_order="19" />
+	<prefecture
+		prefecture_id="3865e2739b29ff4f83b6c9247988c9c30898f4c9a837688c44e2e637bf52"
+		prefecture_name="富山県" display_order="20" />
+	<prefecture
+		prefecture_id="ef84cf204ee0b5e9364fc3b12d51a267b3e4a971c9c9ce2ecb70e6f9c8cc"
+		prefecture_name="石川県" display_order="21" />
+	<prefecture
+		prefecture_id="9f6095379827c825a2859028c300547cab5c7071a04d2c0af2517594409a"
+		prefecture_name="愛知県" display_order="22" />
+	<prefecture
+		prefecture_id="55cd92996dee0abbf5554ef049190236098c0286a1ce221f734b051cffd5"
+		prefecture_name="岐阜県" display_order="23" />
+
+	<!-- 近畿地方 -->
+	<prefecture
+		prefecture_id="2c810f3c9fb7c9eeaf0767a605845cc769bb32c27ce3b97851f034c1dc47"
+		prefecture_name="滋賀県" display_order="24" />
+	<prefecture
+		prefecture_id="6bf8171851afa331b34154e674f55d10c5fd997345d5816db6c2c0de80dc"
+		prefecture_name="大阪府" display_order="25" />
+	<prefecture
+		prefecture_id="78dafd6c26571d111ff351a4085b333032b37e581de433113a3e304a765a"
+		prefecture_name="兵庫県" display_order="26" />
+	<prefecture
+		prefecture_id="a4ef53663b96e072d68d8573e3a7831a917184fab46b8855d51d61761e05"
+		prefecture_name="奈良県" display_order="27" />
+	<prefecture
+		prefecture_id="a4178f0fadd4e17aa293b3bf4965e5ac9a39125c55c0dc511d8165322861"
+		prefecture_name="和歌山県" display_order="28" />
+	<prefecture
+		prefecture_id="dd11cfd428ca66b65e74690b94065522562136e5fc3c49e493945bc6fedf"
+		prefecture_name="京都府" display_order="29" />
+	<prefecture
+		prefecture_id="1fe2d6baf49caf632c3ca6d7694751931fb9140e1406cd1cc6c6df185646"
+		prefecture_name="三重県" display_order="30" />
+
+	<!-- 中国地方 -->
+	<prefecture
+		prefecture_id="04c7438ee4101a8ab24a3a8562f5462095b07d5a95bc58371972af2fb932"
+		prefecture_name="山口県" display_order="31" />
+	<prefecture
+		prefecture_id="82a0db2ac626946896028ac8ae4802384dd38f343dc1a1574e8cd8bdf252"
+		prefecture_name="広島県" display_order="32" />
+	<prefecture
+		prefecture_id="df8554520f9e3f970c2c74071c006b3d60ff9a3895610dd25ab9cdf15079"
+		prefecture_name="岡山県" display_order="33" />
+	<prefecture
+		prefecture_id="e53bf335d55be2444d4bdce9192823e95d1e822ac6d1822d8dd707810dee"
+		prefecture_name="島根県" display_order="34" />
+	<prefecture
+		prefecture_id="f3370f4179e27f8ccc80582523d82dbdfa98c91e2c57e06347d627915c18"
+		prefecture_name="鳥取県" display_order="35" />
+
+	<!-- 四国地方 -->
+	<prefecture
+		prefecture_id="74093101293398a670e48b1daabc3a3daeae3ca874f2128ff95a29c1f030"
+		prefecture_name="愛媛県" display_order="36" />
+	<prefecture
+		prefecture_id="b6015c8dc177957e1a32191f2f9f4df2c47e30abb6937a4653f28345a64d"
+		prefecture_name="香川県" display_order="37" />
+	<prefecture
+		prefecture_id="acdeda766d4d8a82f38d21ea731c8e6b9389af44b540612a6a44822cae71"
+		prefecture_name="高知県" display_order="38" />
+	<prefecture
+		prefecture_id="06197c7c6bdd84f4a87795f781a8f3613271e8e6e925bda97eaf900294e3"
+		prefecture_name="徳島県" display_order="39" />
+
+	<!-- 九州地方 -->
+	<prefecture
+		prefecture_id="52036a267bcdb56b83e8b25400ffc4e2e135a9aaa6f21b3e12331215e98b"
+		prefecture_name="福岡県" display_order="40" />
+	<prefecture
+		prefecture_id="8e92ec01ca14ed3639b90fb224c5155672d4c21cce27db955f546c4883d8"
+		prefecture_name="大分県" display_order="41" />
+	<prefecture
+		prefecture_id="d5a3eac64dd4091e224f992bbde162a5d2c83fabee95370b00cb631b0229"
+		prefecture_name="長崎県" display_order="42" />
+	<prefecture
+		prefecture_id="af9d0f9ec021da0b6794c84d8da4aa0e38c376f966ec0c07e4dfbd417908"
+		prefecture_name="宮崎県" display_order="43" />
+	<prefecture
+		prefecture_id="019a8a6487078ed270e836ca1c2c0c4036b5f06baee0bb62c84f7cae327e"
+		prefecture_name="熊本県" display_order="44" />
+	<prefecture
+		prefecture_id="0313db882ca082134ba7303a28a6826238695224f804537c0878f0f58ba0"
+		prefecture_name="鹿児島県" display_order="45" />
+	<prefecture
+		prefecture_id="30eaed8b1d438e8744c66d56bf0b4e73db973ba76a445ebc29799c71aadc"
+		prefecture_name="佐賀県" display_order="46" />
+
+	<!-- 沖縄地方 -->
+	<prefecture
+		prefecture_id="836c7c1cbff5ce7cb0509c7a03c922fc25caee48b433fa38cf04db89b64f"
+		prefecture_name="沖縄県" display_order="47" />
+</dataset>
+
+

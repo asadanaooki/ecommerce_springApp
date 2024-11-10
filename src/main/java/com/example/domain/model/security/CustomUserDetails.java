@@ -1,4 +1,4 @@
-package com.example.service.user;
+package com.example.domain.model.security;
 
 import java.util.Collection;
 

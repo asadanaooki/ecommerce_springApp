@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.example.domain.mapper.UserMapper;
-import com.example.domain.model.User;
+import com.example.domain.model.entity.User;
+import com.example.domain.model.security.CustomUserDetails;
 
 import lombok.AllArgsConstructor;
 

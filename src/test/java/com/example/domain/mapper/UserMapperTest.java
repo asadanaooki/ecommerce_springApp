@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.example.domain.model.User;
+import com.example.domain.model.entity.User;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -21,10 +21,10 @@ class UserMapperTest extends MapperTestBase {
 	}
 
 	static final String TEST_DATA_FILE_PATH = "data/userMapper/init_data.xml";
-	final String EXISTING_EMAIL = "testuser@example.com";
+	final String EXISTING_EMAIL = "example@example.com";
 	final String NON_EXISTENT_EMAIL = "nonexistent@example.com";
-	final String EXPECTED_USER_ID = "11111111-1111-1111-1111-111111111111";
-	final String EXPECTED_PASSWORD = "$2b$12$RXeMJPTgWvZ.ACZl3Qo5yev1zvcOQPnIrVs.4Ta9x2ge2.xCgcYWm";
+	final String EXPECTED_USER_ID = "550e8400-e29b-41d4-a716-446655440000";
+	final String EXPECTED_PASSWORD = "$2b$12$B9p1FTSq4.i9pzIomBMxV.EFa805FMSmzapQAleimNG3Rof0hhXH.";
 	final String EXPECTED_FIRST_NAME_KANJI = "山田";
 	final String EXPECTED_LAST_NAME_KANJI = "太郎";
 	final String EXPECTED_FIRST_NAME_KANA = "ヤマダ";

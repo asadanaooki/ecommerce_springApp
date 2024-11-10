@@ -14,12 +14,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 public class MapperTestBase {
-	protected static final String DRIVER = org.h2.Driver.class.getName();
-	protected static final String URL = "jdbc:h2:mem:testdb";
-	protected static final String USER = "sa";
-	protected static final String PASSWORD = "";
-	protected static IDatabaseTester databaseTester;
-	protected final String testDataFilePath;
+	static final String DRIVER = org.h2.Driver.class.getName();
+	static final String URL = "jdbc:h2:mem:testdb";
+	static final String USER = "sa";
+	static final String PASSWORD = "";
+	static IDatabaseTester databaseTester;
+	final String testDataFilePath;
 
 	protected MapperTestBase(String testDataFilePath) {
 		this.testDataFilePath = testDataFilePath;
@@ -51,13 +51,13 @@ public class MapperTestBase {
 				throws Exception {
 			super(driverClass, connectionUrl, username, password);
 		}
-		
+
 		@Override
 		public IDatabaseConnection getConnection() throws Exception {
 			IDatabaseConnection connection = super.getConnection();
-			
+
 			connection.getConfig().setProperty(DatabaseConfig.PROPERTY_ESCAPE_PATTERN, "\"?\"");
-			
+
 			return connection;
 		}
 	}

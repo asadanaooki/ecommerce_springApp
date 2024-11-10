@@ -14,9 +14,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.example.domain.enums.UserRole;
+import com.example.domain.model.entity.User;
+import com.example.domain.model.enums.UserRole;
+import com.example.domain.model.security.CustomUserDetails;
 import com.example.domain.mapper.UserMapper;
-import com.example.domain.model.User;
 
 @SpringBootTest
 class CustomUserDetailsServiceTest {
