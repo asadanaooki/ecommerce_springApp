@@ -12,6 +12,8 @@ spring:
     init:
       mode: always
       continue-on-error: true
+  cache:
+    type: simple
 
 mybatis:
   configuration:

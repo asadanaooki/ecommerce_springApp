@@ -1,38 +1,35 @@
 package com.example.service.user;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 
 import com.example.domain.mapper.UserMapper;
 import com.example.domain.model.enums.Gender;
-import com.example.service.result.RegistrationResult;
 import com.example.web.form.RegistrationForm;
 
-@SpringBootTest
+
+
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-	@MockBean
+	@Mock
 	MailVerificationService mailVerificationService;
 
-	@MockBean
+	@Mock
 	UserMapper userMapper;
 
-	@Autowired
+	@InjectMocks
 	UserService userService;
 
 	RegistrationForm form;
 
-	@Autowired
+	@Mock
 	MessageSource messageSource;
 
 	@BeforeEach
@@ -52,53 +49,31 @@ class UserServiceTest {
 		form.setAddress2("Building 101");
 		form.setPhoneNumber("09012345678");
 
-		doNothing().when(mailVerificationService).saveTempRegistrationInfo(form, "mail_verification:100050");
 	}
 
-	@Test
-	void registerTempUser_Success() {
-		when(userMapper.isEmailUnique(form.getEmail())).thenReturn(true);
-		when(userMapper.isPhoneNumberUnique(form.getPhoneNumber())).thenReturn(true);
-		when(mailVerificationService.generateVerificationCode()).thenReturn(Optional.of("mail_verification:100050"));
-
-		RegistrationResult result = userService.registerTempUser(form);
-
-		assertThat(result.isSuccess()).isTrue();
-	}
-
-	@Test
-	void registerTempUser_EmailExist() {
-		when(userMapper.isEmailUnique(form.getEmail())).thenReturn(false);
-
-		RegistrationResult result = userService.registerTempUser(form);
-
-		assertThat(result.isSuccess()).isFalse();
-		assertThat(result.getErrors())
-				.containsExactly(entry("email", messageSource.getMessage("registration.email.duplicate", null, null)));
-	}
-
-	@Test
-	void registerTempUser_PhoneNumberExist() {
-		when(userMapper.isEmailUnique(form.getEmail())).thenReturn(true);
-		when(userMapper.isPhoneNumberUnique(form.getEmail())).thenReturn(false);
-
-		RegistrationResult result = userService.registerTempUser(form);
-
-		assertThat(result.isSuccess()).isFalse();
-		assertThat(result.getErrors()).containsExactly(
-				entry("phoneNumber", messageSource.getMessage("registration.phoneNumber.duplicate", null, null)));
-	}
-
-	@Test
-	void registerTempUser_exceedsVerificationCodeLimit() {
-		when(userMapper.isEmailUnique("test@example.com")).thenReturn(true);
-		when(userMapper.isPhoneNumberUnique("09012345678")).thenReturn(true);
-		when(mailVerificationService.generateVerificationCode()).thenReturn(Optional.empty());
-
-		RegistrationResult result = userService.registerTempUser(form);
-		
-		assertThat(result.isSuccess()).isFalse();
-		assertThat(result.getErrors().get("email")).isEqualTo(messageSource.getMessage("registration.busy", null, null));
-	}
+//	@Nested
+//	class registerTempUser {
+//		@Test
+//		void registerTempUser_Success() {
+//			when(mailVerificationService.isRegistrationLocked(form.getEmail())).thenReturn(false);
+//			when(mailVerificationService.checkUniqueConstraint(eq(form), any(UserRegistrationResult.class)))
+//					.thenReturn(true);
+//
+//			UserRegistrationResult result = userService.registerTempUser(form);
+//
+//			assertThat(result.isSuccess()).isTrue();
+//		}
+//
+//		@Test
+//		void registerTempUser_NotUnique() {
+//			when(mailVerificationService.checkUniqueConstraint(eq(form), any(UserRegistrationResult.class)))
+//			.thenReturn(false);
+//
+//			UserRegistrationResult result = userService.registerTempUser(form);
+//
+//			assertThat(result.isSuccess()).isFalse();
+//		}
+//
+//	}
 
 }

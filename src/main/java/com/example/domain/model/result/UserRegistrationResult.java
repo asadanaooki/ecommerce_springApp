@@ -1,4 +1,4 @@
-package com.example.service.result;
+package com.example.domain.model.result;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import lombok.Data;
  * ユーザー登録結果
  */
 @Data
-public class RegistrationResult {
+public class UserRegistrationResult {
 
 	/**
 	 * 登録成功フラグ
@@ -20,6 +20,11 @@ public class RegistrationResult {
 	 * エラー情報
 	 */
 	private final Map<String, String> errors = new HashMap<String, String>();
+	
+	/**
+	 * ユーザーID
+	 */
+	private String userId;
 
 	/**
 	 * エラー情報を追加します。

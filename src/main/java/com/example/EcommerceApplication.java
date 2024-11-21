@@ -2,12 +2,14 @@ package com.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * EcommerceApplication クラスは、Spring Boot アプリケーションのエントリーポイントです。 アプリケーションを起動するための
  * main メソッドを提供します。
  */
 @SpringBootApplication
+@EnableCaching
 public class EcommerceApplication {
 
 	/**

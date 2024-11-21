@@ -2,6 +2,7 @@ package com.example.service.user;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.example.domain.mapper.PrefectureMapper;
@@ -25,6 +26,7 @@ public class PrefectureService {
 	 * 
 	 * @return 全ての都道府県データ
 	 */
+	@Cacheable("prefecture")
 	public List<Prefecture> getAllPrefectures() {
 		return prefectureMapper.getAllPrefectures();
 	}

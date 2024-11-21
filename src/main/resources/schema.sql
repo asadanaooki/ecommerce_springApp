@@ -1,7 +1,7 @@
 -- User Table
 CREATE TABLE `user` (
     user_id CHAR(36) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password CHAR(60) NOT NULL,
     first_name_kanji VARCHAR(20) NOT NULL,
     last_name_kanji VARCHAR(20) NOT NULL,

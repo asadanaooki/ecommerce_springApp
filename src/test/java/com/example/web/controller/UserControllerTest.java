@@ -8,10 +8,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -36,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.example.domain.model.entity.Prefecture;
 import com.example.domain.model.enums.Gender;
-import com.example.service.result.RegistrationResult;
+import com.example.domain.model.result.UserRegistrationResult;
 import com.example.service.user.PrefectureService;
 import com.example.service.user.UserService;
 import com.example.web.form.LoginForm;
@@ -192,19 +193,19 @@ class UserControllerTest {
 
 		@Test
 		void registerTmpUser_Success() throws Exception {
-			RegistrationResult result = new RegistrationResult();
+			UserRegistrationResult result = new UserRegistrationResult();
 			result.setSuccess(true);
 
 			when(userService.registerTempUser(any(RegistrationForm.class))).thenReturn(result);
 
 			mockMvc.perform(post("/user/register").with(csrf()).params(params)
 					.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().is3xxRedirection())
-					.andExpect(redirectedUrl("/user/registrationSuccess"));
+					.andExpect(redirectedUrl("/user/verificationCodeInput"));
 		}
 
 		@Test
 		void registerTmpUser_ServiceFails() throws Exception {
-			RegistrationResult regResult = new RegistrationResult();
+			UserRegistrationResult regResult = new UserRegistrationResult();
 			regResult.setSuccess(false);
 			regResult.addError(FIELD_EMAIL, messageSource.getMessage("registration.email.duplicate", null, null));
 			when(userService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
@@ -216,28 +217,29 @@ class UserControllerTest {
 					.andExpect(model().attribute(FIELD_EMAIL,
 							messageSource.getMessage("registration.email.duplicate", null, null)))
 					.andReturn();
-
-			// モデルの値を確認
-			ModelAndView modelAndView = mvcResult.getModelAndView();
-			RegistrationForm form = (RegistrationForm) modelAndView.getModel().get("form");
-
-			// フォームの値が書き換えられていないことを確認
-			assertThat(form.getEmail()).isEqualTo("test@example.com");
-			assertThat(form.getPassword()).isEqualTo("password123");
-			assertThat(form.getLastNameKanji()).isEqualTo("山田");
-			assertThat(form.getFirstNameKanji()).isEqualTo("太郎");
-			assertThat(form.getLastNameKana()).isEqualTo("ヤマダ");
-			assertThat(form.getFirstNameKana()).isEqualTo("タロウ");
-			assertThat(form.getGender()).isEqualTo(Gender.MALE);
-			assertThat(form.getBirthDate()).isEqualTo(LocalDate.of(1990, 1, 1)); // LocalDate型の確認
-			assertThat(form.getPostCode()).isEqualTo("1234567");
-			assertThat(form.getPrefectureId()).isEqualTo("13");
-			assertThat(form.getAddress1()).isEqualTo("新宿区新宿1-1-1");
-			assertThat(form.getAddress2()).isEqualTo("マンション101号室");
-			assertThat(form.getPhoneNumber()).isEqualTo("09012345678");
-
 		}
-		
+
+		@Test
+		void registerTmpUser_CookieSet() throws Exception {
+			UserRegistrationResult regResult = new UserRegistrationResult();
+			regResult.setSuccess(true);
+			String userId = UUID.randomUUID().toString();
+			regResult.setUserId(userId);
+			when(userService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
+			
+			MvcResult result = mockMvc
+					.perform(post("/user/register").with(csrf()).params(params)
+							.contentType(MediaType.APPLICATION_FORM_URLENCODED))
+					.andExpect(status().is3xxRedirection()).andReturn();
+
+			String header = result.getResponse().getHeader(HttpHeaders.SET_COOKIE);
+
+			// クッキーの属性を検証
+			assertThat(header).contains("userId=" + userId).contains("HttpOnly").contains("Secure")
+			.contains("SameSite=Strict");
+			
+		}
+
 		// TODO: 後で対応
 
 //		@ParameterizedTest

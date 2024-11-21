@@ -9,20 +9,16 @@
 		#{email}
 	</select>
 
-	<select id="isPhoneNumberUnique" resultType="boolean">
-		select not exists(
-		select 1
+	<select id="findPhoneNumber">
+		select phone_number
 		from `user`
 		where phone_number = #{phoneNumber}
-		)
 	</select>
 
-	<select id="isEmailUnique" resultType="boolean">
-		select not exists(
-		select 1
+	<select id="findEmail">
+		select email
 		from `user`
 		where email = #{email}
-		)
 	</select>
 
 </mapper>

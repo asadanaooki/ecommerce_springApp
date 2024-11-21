@@ -6,7 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import com.example.domain.mapper.UserMapper;
-import com.example.service.result.RegistrationResult;
+import com.example.domain.model.result.UserRegistrationResult;
 import com.example.web.form.RegistrationForm;
 
 import lombok.AllArgsConstructor;
@@ -39,8 +39,8 @@ public class UserService {
 	 * @param form 登録情報
 	 * @return 登録結果
 	 */
-	public RegistrationResult registerTempUser(RegistrationForm form) {
-		RegistrationResult result = new RegistrationResult();
+	public UserRegistrationResult registerTempUser(RegistrationForm form) {
+		UserRegistrationResult result = new UserRegistrationResult();
 
 		// ユニーク制約チェック
 		if (!checkUniqueConstraint(form, result)) {
@@ -74,14 +74,14 @@ public class UserService {
 	 * @param result 登録結果
 	 * @return true:ユニーク true:ユニークでない
 	 */
-	private boolean checkUniqueConstraint(RegistrationForm form, RegistrationResult result) {
+	private boolean checkUniqueConstraint(RegistrationForm form, UserRegistrationResult result) {
 		// eメールの制約
-		if (!isEmailUnique(form.getEmail())) {
+		if (isEmailUnique(form.getEmail()).isPresent()) {
 			result.addError("email", messageSource.getMessage("registration.email.duplicate", null, null));
 			return false;
 		}
 		// 電話番号の制約
-		if (!isPhoneNumberUnique(form.getPhoneNumber())) {
+		if (!isPhoneNumberUnique(form.getPhoneNumber()).isPresent()) {
 			result.addError("phoneNumber", messageSource.getMessage("registration.phoneNumber.duplicate", null, null));
 			return false;
 		}
@@ -94,8 +94,8 @@ public class UserService {
 	 * @param phoneNumber 電話番号
 	 * @return true:ユニーク false:ユニークでない
 	 */
-	private boolean isPhoneNumberUnique(String phoneNumber) {
-		return userMapper.isPhoneNumberUnique(phoneNumber);
+	private Optional<String> isPhoneNumberUnique(String phoneNumber) {
+		return userMapper.findPhoneNumber(phoneNumber);
 	}
 
 	/**
@@ -104,8 +104,8 @@ public class UserService {
 	 * @param email メールアドレス
 	 * @return true:ユニーク false:ユニークでない
 	 */
-	private boolean isEmailUnique(String email) {
-		return userMapper.isEmailUnique(email);
+	private Optional<String> isEmailUnique(String email) {
+		return userMapper.findEmail(email);
 	}
 
 }

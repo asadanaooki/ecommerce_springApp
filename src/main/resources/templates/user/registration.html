@@ -6,7 +6,13 @@
 </head>
 <body>
 	<h1>ユーザー登録</h1>
+
+
+
 	<form th:action="@{/user/register}" th:object="${form}" method="post">
+		<!-- 全体的なエラー表示 -->
+		<div th:if="${#fields.hasErrors('global')}" th:errors="*{global}">
+		</div>
 		<div>
 			<label for="email">メールアドレス:</label> <input type="text"
 				th:field="*{email}" />
@@ -53,8 +59,9 @@
 		</div>
 
 		<div>
-			<label>性別：</label> <input type="radio" th:field="*{gender}" value="MALE" />男性
-			<input type="radio" th:field="*{gender}" value="FEMALE" />女性
+			<label>性別：</label> <input type="radio" th:field="*{gender}"
+				value="MALE" />男性 <input type="radio" th:field="*{gender}"
+				value="FEMALE" />女性
 			<div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
 		</div>
 
@@ -77,8 +84,8 @@
 			<label for="prefectureId">都道府県:</label> <select
 				th:field="*{prefectureId}">
 				<option value="">選択してください</option>
-				<option th:each="p : ${prefectureList}"
-					th:value="${p.prefectureId}" th:text="${p.prefectureName}"></option>
+				<option th:each="p : ${prefectureList}" th:value="${p.prefectureId}"
+					th:text="${p.prefectureName}"></option>
 			</select>
 		</div>
 

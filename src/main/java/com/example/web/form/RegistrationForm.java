@@ -29,7 +29,7 @@ public class RegistrationForm {
 	 * メールアドレス
 	 */
 	@NotBlank(message = "{registration.email.required}")
-	@Size(max = 100, message = "{registration.email.size}")
+	@Size(max = 255, message = "{registration.email.size}")
 	@Email(message = "{registration.email.format}")
 	private String email;
 

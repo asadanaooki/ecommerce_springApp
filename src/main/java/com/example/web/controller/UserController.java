@@ -1,7 +1,10 @@
 package com.example.web.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.example.service.result.RegistrationResult;
+import com.example.domain.model.result.UserRegistrationResult;
 import com.example.service.user.PrefectureService;
 import com.example.service.user.UserService;
 import com.example.web.form.LoginForm;
@@ -90,22 +93,28 @@ public class UserController {
 	 */
 	@PostMapping("user/register")
 	public String registerTmpUser(@Valid @ModelAttribute("form") RegistrationForm form, BindingResult result,
-			Model model) {
+			Model model, HttpServletResponse response) {
 		if (result.hasErrors()) {
 			addPrefectureList(model);
 			return "user/registration";
 		}
 
-		RegistrationResult regResult = userService.registerTempUser(form);
+		UserRegistrationResult regResult = userService.registerTempUser(form);
 		// 登録エラー
-		if (regResult.isSuccess() == false) {
+		if (!regResult.isSuccess()) {
 			regResult.getErrors().forEach(model::addAttribute);
 			addPrefectureList(model);
 
 			return "user/registration";
 		}
 
-		return "redirect:/user/registrationSuccess";
+		// クッキーの設定
+		ResponseCookie cookie = ResponseCookie.from("userId", regResult.getUserId())
+				.httpOnly(true).secure(true).sameSite("Strict").build();
+		
+		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+		
+		return "redirect:/user/verificationCodeInput";
 	}
 
 	/**

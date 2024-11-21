@@ -21,18 +21,18 @@ public interface UserMapper {
 	Optional<User> findUserCredentialsByEmail(String email);
 
 	/**
-	 * 指定された電話番号が一意であるか判定する
+	 * 電話番号を取得する
 	 * 
 	 * @param phoneNumber 電話番号
-	 * @return true:一意である false:重複している
+	 * @return 電話番号
 	 */
-	boolean isPhoneNumberUnique(String phoneNumber);
+	Optional<String> findPhoneNumber(String phoneNumber);
 
 	/**
-	 * 指定されたメールアドレスがデータベース内で一意であるか判定する
+	 * メールアドレスを取得する
 	 * 
 	 * @param email メールアドレス
-	 * @return true:一意である false:重複している
+	 * @return メールアドレス
 	 */
-	boolean isEmailUnique(String email);
+	Optional<String> findEmail(String email);
 }
