@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.domain.model.result.UserRegistrationResult;
 import com.example.service.user.PrefectureService;
-import com.example.service.user.UserService;
+import com.example.service.user.UserRegistrationService;
 import com.example.web.form.LoginForm;
 import com.example.web.form.RegistrationForm;
 
@@ -30,7 +30,7 @@ public class UserController {
 	/**
 	 * ユーザー関連のサービス
 	 */
-	private final UserService userService;
+	private final UserRegistrationService userRegistrationService;
 
 	/**
 	 * 都道府県データ関連のサービス
@@ -99,7 +99,7 @@ public class UserController {
 			return "user/registration";
 		}
 
-		UserRegistrationResult regResult = userService.registerTempUser(form);
+		UserRegistrationResult regResult = userRegistrationService.registerTempUser(form);
 		// 登録エラー
 		if (!regResult.isSuccess()) {
 			regResult.getErrors().forEach(model::addAttribute);

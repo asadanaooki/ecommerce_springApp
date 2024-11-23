@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import com.example.domain.mapper.UserMapper;
@@ -16,14 +17,19 @@ import com.example.web.form.RegistrationForm;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 /**
- * メール認証に関連するサービスクラス
+ * ユーザー関連のサービスクラス
  */
 @Service
-@RequiredArgsConstructor
-public class MailVerificationService {
+@AllArgsConstructor
+public class UserRegistrationService {
+
+	/**
+	 * メッセージソース
+	 */
+	private final MessageSource messageSource;
 
 	/**
 	 * 認証コードの最大値
@@ -57,22 +63,50 @@ public class MailVerificationService {
 	public static int expirationTimeMinutes;
 
 	/**
-	 * メッセージソース
-	 */
-	private final MessageSource messageSource;
-
-	/**
 	 * ユーザー情報に関するDB操作を担当するマッパー
 	 */
 	private final UserMapper userMapper;
 
 	/**
+	 * 仮ユーザーの登録を行う
+	 * 
+	 * @param form 登録情報
+	 * @return 登録結果
+	 */
+	public UserRegistrationResult registerTempUser(RegistrationForm form) {
+		UserRegistrationResult result = new UserRegistrationResult();
+
+		// ロック状態確認
+		if (isRegistrationLocked(form.getEmail())) {
+			result.setSuccess(false);
+			result.addError("global", messageSource.getMessage("registration.locked", null, null));
+			return result;
+		}
+
+		// ユニーク制約チェック
+		if (!checkUniqueConstraint(form, result)) {
+			result.setSuccess(false);
+			return result;
+		}
+
+		// Redisへ登録内容を保存する
+		Pair<String, String> pa = saveTempRegistrationInfo(form);
+
+		// TODO: 認証メールを送信
+
+		// 登録成功データを設定
+		result.setUserId(pa.getFirst());
+		result.setSuccess(true);
+		return result;
+	}
+
+	/**
 	 * 仮登録情報を保存する
 	 * 
 	 * @param form 登録フォーム
-	 * @return ユーザーID
+	 * @return 第一引数:ユーザーID 第二引数:認証コード
 	 */
-	public String saveTempRegistrationInfo(RegistrationForm form) {		
+	 Pair<String, String> saveTempRegistrationInfo(RegistrationForm form) {
 		String userId = UUID.randomUUID().toString();
 		String code = String.format("%06d", new Random().nextInt(MAX_CODE + 1));
 		Map<String, Object> map = objectMapper.convertValue(form, new TypeReference<Map<String, Object>>() {
@@ -85,8 +119,8 @@ public class MailVerificationService {
 		// ユーザー情報を保存
 		template.opsForHash().putAll(userIdKey, map);
 		template.expire(userIdKey, expirationTimeMinutes, TimeUnit.MINUTES);
-		
-		return userId;
+
+		return Pair.of(userId, code);
 	}
 
 	/**
@@ -95,7 +129,7 @@ public class MailVerificationService {
 	 * @param email メールアドレス
 	 * @return true:ロック中 false:未ロック
 	 */
-	public boolean isRegistrationLocked(String email) {
+	private boolean isRegistrationLocked(String email) {
 		return template.hasKey(LOCK_PREFIX + email);
 	}
 
@@ -106,7 +140,7 @@ public class MailVerificationService {
 	 * @param result 登録結果
 	 * @return true:ユニーク true:ユニークでない
 	 */
-	public boolean checkUniqueConstraint(RegistrationForm form, UserRegistrationResult result) {
+	 boolean checkUniqueConstraint(RegistrationForm form, UserRegistrationResult result) {
 		// eメールの制約
 		if (isEmailRegistered(form.getEmail())) {
 			result.addError("email", messageSource.getMessage("registration.email.duplicate", null, null));
