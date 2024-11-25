@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.domain.mapper.UserMapper">
-
+<!--whereの右辺を改行したくない-->
 	<select id="findUserCredentialsByEmail"
 		resultType="com.example.domain.model.entity.User">
-		select user_id, password, role from `user` where email
-		=
+		select user_id, password, role
+		from `user`
+		where email =
 		#{email}
 	</select>
 
-	<select id="findPhoneNumber">
-		select phone_number
-		from `user`
-		where phone_number = #{phoneNumber}
+	<select id="phoneNumberNotExists" resultType="boolean">
+		SELECT NOT EXISTS
+		(
+		SELECT 1
+		FROM user
+		WHERE phone_number = #{phoneNumber}
+		)
 	</select>
 
-	<select id="findEmail">
-		select email
-		from `user`
-		where email = #{email}
+	<select id="emailNotExists" resultType="boolean">
+		SELECT NOT EXISTS (
+		SELECT 1
+		FROM user
+		WHERE email = #{email}
+		)
 	</select>
 
 </mapper>

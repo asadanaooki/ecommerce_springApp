@@ -5,16 +5,22 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
@@ -27,7 +33,6 @@ import org.springframework.data.util.Pair;
 
 import com.example.domain.mapper.UserMapper;
 import com.example.domain.model.enums.Gender;
-import com.example.domain.model.result.UserRegistrationResult;
 import com.example.web.form.RegistrationForm;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,252 +40,188 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ExtendWith(MockitoExtension.class)
 class UserRegistrationServiceTest {
 
-	@Mock
-	UserMapper userMapper;
+    @Mock
+    UserMapper userMapper;
 
-	@InjectMocks
-	UserRegistrationService userRegistrationService;
+    @InjectMocks
+    UserRegistrationService userRegistrationService;
 
-	RegistrationForm form;
+    RegistrationForm form;
 
-	@Mock
-	MessageSource messageSource;
+    @Mock
+    MessageSource messageSource;
 
-	@Mock
-	StringRedisTemplate template;
+    @Mock
+    StringRedisTemplate template;
 
-	@Mock
-	HashOperations<String, Object, Object> hashOperations;
+    @Mock
+    HashOperations<String, Object, Object> hashOperations;
 
-	@Mock
-	ObjectMapper objectMapper;
+    @Mock
+    ObjectMapper objectMapper;
 
-	@BeforeEach
-	void setUp() {
-		form = new RegistrationForm();
-		form.setEmail("test@example.com");
-		form.setPassword("password123");
-		form.setLastNameKanji("山田");
-		form.setFirstNameKanji("太郎");
-		form.setLastNameKana("ヤマダ");
-		form.setFirstNameKana("タロウ");
-		form.setGender(Gender.MALE);
-		form.setBirthDate(LocalDate.of(1990, 1, 1));
-		form.setPostCode("1234567");
-		form.setPrefectureId("01");
-		form.setAddress1("Shibuya-ku");
-		form.setAddress2("Building 101");
-		form.setPhoneNumber("09012345678");
+    @BeforeEach
+    void setUp() {
+        form = new RegistrationForm();
+        form.setEmail("test@example.com");
+        form.setPassword("password123");
+        form.setLastNameKanji("山田");
+        form.setFirstNameKanji("太郎");
+        form.setLastNameKana("ヤマダ");
+        form.setFirstNameKana("タロウ");
+        form.setGender(Gender.MALE);
+        form.setBirthDate(LocalDate.of(1990, 1, 1));
+        form.setPostCode("1234567");
+        form.setPrefectureId("01");
+        form.setAddress1("Shibuya-ku");
+        form.setAddress2("Building 101");
+        form.setPhoneNumber("09012345678");
 
-	}
+    }
 
-	@Nested
-	class checkUniqueConstraint {
+    static Stream<Arguments> provideUniqueCheckData() {
+        return Stream.of(
+                Arguments.of("全てユニーク", "test@example.com", "09012345678", true, true,
+                        Collections.emptyList()),
+                Arguments.of("eメールが重複", "test@example.com", "09012345678", false, true,
+                        List.of("email")),
+                Arguments.of("電話番号が重複", "test@example.com", "09012345678", true, false,
+                        List.of("phoneNumber")),
+                Arguments.of("全て重複", "test@example.com", "09012345678", false, false,
+                        List.of("email", "phoneNumber")));
+    }
 
-		@Test
-		void checkUniqueConstraint_AllUnique() {
-			UserRegistrationResult result = new UserRegistrationResult();
-			when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.empty());
-			when(userMapper.findPhoneNumber(form.getPhoneNumber())).thenReturn(Optional.empty());
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideUniqueCheckData")
+    void checkUniqueConstraint(String pattern, String email, String phoneNumber, boolean isEmailUnique,
+            boolean isPhoneNumberUnique, List<String> errorFields) {
+        when(userMapper.emailNotExists(email)).thenReturn(isEmailUnique);
+        when(userMapper.phoneNumberNotExists(phoneNumber)).thenReturn(isPhoneNumberUnique);
 
-			boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
+        // 以下だとフォーマットしても戻らない
+        errorFields.stream().forEach(field -> when(messageSource.getMessage(field + ".duplicate",
+                null, null)));
+        // 以下のようにしたい
+        //        errorFields.stream().forEach(field ->
+        //        when(messageSource.getMessage(field + ".duplicate", null, null)));
 
-			assertThat(isUnique).isTrue();
-			assertThat(result.getErrors()).isEmpty();
+    }
 
-		}
+    //    @Nested
+    //    class checkUniqueConstraint {
+    //
+    //        @Test
+    //        void checkUniqueConstraint_AllUnique() {
+    //            UserRegistrationResult result = new UserRegistrationResult();
+    //            when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.empty());
+    //            when(userMapper.findPhoneNumber(form.getPhoneNumber())).thenReturn(Optional.empty());
+    //
+    //            boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
+    //
+    //            assertThat(isUnique).isTrue();
+    //            assertThat(result.getErrors()).isEmpty();
+    //
+    //        }
+    //
+    //        @Test
+    //        void checkUniqueConstraint_EmailExists() {
+    //            UserRegistrationResult result = new UserRegistrationResult();
+    //            when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.of(form.getEmail()));
+    //            when(messageSource.getMessage("registration.email.duplicate", null, null)).thenReturn("error");
+    //
+    //            boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
+    //
+    //            assertThat(isUnique).isFalse();
+    //            assertThat(result.getErrors()).containsExactly(entry("email", "error"));
+    //        }
+    //
+    //        @Test
+    //        void checkUniqueConstraint_PhoneNumberExists() {
+    //            UserRegistrationResult result = new UserRegistrationResult();
+    //            when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.empty());
+    //            when(userMapper.findPhoneNumber(form.getPhoneNumber())).thenReturn(Optional.of(form.getPhoneNumber()));
+    //            when(messageSource.getMessage("registration.phoneNumber.duplicate", null, null)).thenReturn("error");
+    //
+    //            boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
+    //
+    //            assertThat(isUnique).isFalse();
+    //            assertThat(result.getErrors()).containsExactly(entry("phoneNumber", "error"));
+    //        }
+    //
+            @Nested
+            class saveTempRegistrationInfo {
+                Map<String, Object> map = new HashMap<String, Object>();
+    
+                @BeforeEach
+                void setup() {
+                    map.put("email", form.getEmail());
+                    map.put("password", form.getPassword());
+                    map.put("lastNameKanji", form.getLastNameKanji());
+                    map.put("firstNameKanji", form.getFirstNameKanji());
+                    map.put("lastNameKana", form.getLastNameKana());
+                    map.put("firstNameKana", form.getFirstNameKana());
+                    map.put("gender", form.getGender());
+                    map.put("birthDate", form.getBirthDate());
+                    map.put("postCode", form.getPostCode());
+                    map.put("prefectureId", form.getPrefectureId());
+                    map.put("address1", form.getAddress1());
+                    map.put("address2", form.getAddress2());
+                    map.put("phoneNumber", form.getPhoneNumber());
+                }
+    
+                @SuppressWarnings("unchecked")
+                @Test
+                void saveTempRegistrationInfo_Success() {
+    
+                    UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+                    try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class);
+                            // TODO どこで改行するか
+                            MockedConstruction<Random> mockedRandom = mockConstruction(Random.class,
+                                    (mock, context) -> {
+                                        when(mock.nextInt(999999 + 1)).thenReturn(123456);
+                                    })) {
+                        when(objectMapper.convertValue(eq(form), any(TypeReference.class))).thenReturn(map);
+    
+                        when(template.opsForHash()).thenReturn(hashOperations);
+                        mockedUUID.when(UUID::randomUUID).thenReturn(uuid);
+                        String userId = uuid.toString();
+                        userRegistrationService.expirationTimeMinutes = 10;
+    
+                        Pair<String, String> result = userRegistrationService.saveTempRegistrationInfo(form);
+    
+                        assertThat(result.getFirst()).isEqualTo(userId);
+                        assertThat(result.getSecond()).isEqualTo("123456");
+                        verify(hashOperations).putAll("mail_verification:" + userId, map);
+                        verify(template).expire("mail_verification:" + userId, 10, TimeUnit.MINUTES);
+                    }
+                }
+    
+            }
+        }
 
-		@Test
-		void checkUniqueConstraint_EmailExists() {
-			UserRegistrationResult result = new UserRegistrationResult();
-			when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.of(form.getEmail()));
-			when(messageSource.getMessage("registration.email.duplicate", null, null)).thenReturn("error");
+    @Nested
+    class registerTempUser {
+        //		@Test
+        //		void registerTempUser_Success() {
+        //			when(mailVerificationService.isRegistrationLocked(form.getEmail())).thenReturn(false);
+        //			when(mailVerificationService.checkUniqueConstraint(eq(form), any(UserRegistrationResult.class)))
+        //					.thenReturn(true);
+        //
+        //			UserRegistrationResult result = userService.registerTempUser(form);
+        //
+        //			assertThat(result.isSuccess()).isTrue();
+        //		}
 
-			boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
+        //		@Test
+        //		void registerTempUser_NotUnique() {
+        //			when(mailVerificationService.checkUniqueConstraint(eq(form), any(UserRegistrationResult.class)))
+        //			.thenReturn(false);
+        //
+        //			UserRegistrationResult result = userService.registerTempUser(form);
+        //
+        //			assertThat(result.isSuccess()).isFalse();
+        //		}
 
-			assertThat(isUnique).isFalse();
-			assertThat(result.getErrors()).containsExactly(entry("email", "error"));
-		}
-
-		@Test
-		void checkUniqueConstraint_PhoneNumberExists() {
-			UserRegistrationResult result = new UserRegistrationResult();
-			when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.empty());
-			when(userMapper.findPhoneNumber(form.getPhoneNumber())).thenReturn(Optional.of(form.getPhoneNumber()));
-			when(messageSource.getMessage("registration.phoneNumber.duplicate", null, null)).thenReturn("error");
-
-			boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
-
-			assertThat(isUnique).isFalse();
-			assertThat(result.getErrors()).containsExactly(entry("phoneNumber", "error"));
-		}
-
-		
-// TODO: 以下後で対応
-//		@Nested
-//		class saveTempRegistrationInfo {
-//			Map<String, Object> map = new HashMap<String, Object>();
-//
-//			@BeforeEach
-//			void setup() {
-//				map.put("email", form.getEmail());
-//				map.put("password", form.getPassword());
-//				map.put("lastNameKanji", form.getLastNameKanji());
-//				map.put("firstNameKanji", form.getFirstNameKanji());
-//				map.put("lastNameKana", form.getLastNameKana());
-//				map.put("firstNameKana", form.getFirstNameKana());
-//				map.put("gender", form.getGender());
-//				map.put("birthDate", form.getBirthDate());
-//				map.put("postCode", form.getPostCode());
-//				map.put("prefectureId", form.getPrefectureId());
-//				map.put("address1", form.getAddress1());
-//				map.put("address2", form.getAddress2());
-//				map.put("phoneNumber", form.getPhoneNumber());
-//			}
-//
-//			@Test
-//			void saveTempRegistrationInfo_Success() {
-//				when(objectMapper.convertValue(eq(form), any(TypeReference.class))).thenReturn(map);
-//
-//				try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class);
-//						MockedConstruction<Random> mockedRandom = mockConstruction(Random.class, (mock, context) -> {
-//							when(mock.nextInt()).thenReturn(123456);
-//						})) {
-//					UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-//					mockedUUID.when(UUID::randomUUID).thenReturn(uuid);
-//					userRegistrationService.expirationTimeMinutes = 10;
-//					
-//					Pair<String, String> result = userRegistrationService.saveTempRegistrationInfo(form);
-//					
-//					
-//
-//				}
-//			}
-//
-//		}
-//	}
-
-//	@Nested
-//	class registerTempUser {
-//		@Test
-//		void registerTempUser_Success() {
-//			when(mailVerificationService.isRegistrationLocked(form.getEmail())).thenReturn(false);
-//			when(mailVerificationService.checkUniqueConstraint(eq(form), any(UserRegistrationResult.class)))
-//					.thenReturn(true);
-//
-//			UserRegistrationResult result = userService.registerTempUser(form);
-//
-//			assertThat(result.isSuccess()).isTrue();
-//		}
-//
-//		@Test
-//		void registerTempUser_NotUnique() {
-//			when(mailVerificationService.checkUniqueConstraint(eq(form), any(UserRegistrationResult.class)))
-//			.thenReturn(false);
-//
-//			UserRegistrationResult result = userService.registerTempUser(form);
-//
-//			assertThat(result.isSuccess()).isFalse();
-//		}
-//
-//	}
-
-//	@Test
-//	void saveTempRegistrationInfo() {
-//		UUID fixedUUID = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-//		ObjectMapper mapper = new ObjectMapper();
-//		mapper.registerModule(new JavaTimeModule());
-//		Map<String, Object> map = new ObjectMapper().convertValue(form, new TypeReference<Map<String, Object>>() {});
-//		
-//		try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
-//			mockedUUID.when(UUID::randomUUID).thenReturn(fixedUUID);
-//			when(objectMapper.convertValue(eq(form), any(TypeReference.class))).thenReturn(map);
-//
-//			@SuppressWarnings("unchecked")
-//			ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
-//			when(template.opsForHash()).thenReturn(hashOperations);
-//
-//			mailVerificationService.saveTempRegistrationInfo(form);
-//
-//			verify(template.opsForHash()).putAll(eq(fixedUUID.toString()), captor.capture());
-//			verify(template).expire(eq(fixedUUID.toString()), MailVerificationService.expirationTimeMinutes,
-//					TimeUnit.MINUTES);
-//			Map<String, Object> capMap = captor.getValue();
-//
-//			assertThat(capMap.get("email")).isEqualTo("test@example.com");
-//			assertThat(capMap.get("password")).isEqualTo("password123");
-//			assertThat(capMap.get("lastNameKanji")).isEqualTo("山田");
-//			assertThat(capMap.get("firstNameKanji")).isEqualTo("太郎");
-//			assertThat(capMap.get("lastNameKana")).isEqualTo("ヤマダ");
-//			assertThat(capMap.get("firstNameKana")).isEqualTo("タロウ");
-//			assertThat(capMap.get("gender")).isEqualTo(Gender.MALE.toString());
-//			assertThat(capMap.get("birthDate")).isEqualTo(LocalDate.of(1990, 1, 1).toString());
-//			assertThat(capMap.get("postCode")).isEqualTo("1234567");
-//			assertThat(capMap.get("prefectureId")).isEqualTo("01");
-//			assertThat(capMap.get("address1")).isEqualTo("Shibuya-ku");
-//			assertThat(capMap.get("address2")).isEqualTo("Building 101");
-//			assertThat(capMap.get("phoneNumber")).isEqualTo("09012345678");
-//
-//		}
-//
-//	}
-
-	// @Nested
-//	class isRegistrationLocked {
-//		@Test
-//		void isRegistrationLocked_AlradyExist() {
-//			when(template.hasKey("user_registration_lock:" + form.getEmail())).thenReturn(true);
-//
-//			boolean result = mailVerificationService.isRegistrationLocked(form.getEmail());
-//			assertThat(result).isTrue();
-//		}
-//
-//		@Test
-//		void isRegistrationLocked_NotExist() {
-//			when(template.hasKey("user_registration_lock:" + form.getEmail())).thenReturn(false);
-//
-//			boolean result = mailVerificationService.isRegistrationLocked(form.getEmail());
-//			assertThat(result).isFalse();
-//		}
-//	}
-//
-//	@Nested
-//	class checkUniqueConstraint {
-//		@Test
-//		void checkUniqueConstraint_AllUnique() {
-//			UserRegistrationResult result = new UserRegistrationResult();
-//			when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.empty());
-//			when(userMapper.findPhoneNumber(form.getPhoneNumber())).thenReturn(Optional.empty());
-//
-//			boolean isUnique = mailVerificationService.checkUniqueConstraint(form, result);
-//
-//			assertThat(isUnique).isTrue();
-//		}
-//
-//		@Test
-//		void checkUniqueConstraint_EmailRegistered() {
-//			UserRegistrationResult result = new UserRegistrationResult();
-//			when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.of(form.getEmail()));
-//			when(messageSource.getMessage("registration.email.duplicate", null, null)).thenReturn("error");
-//
-//			boolean isUnique = mailVerificationService.checkUniqueConstraint(form, result);
-//
-//			assertThat(isUnique).isFalse();
-//			assertThat(result.getErrors()).containsExactly(entry("email", "error"));
-//		}
-//
-//		@Test
-//		void checkUniqueConstraint_PhoneNumberRegistered() {
-//			UserRegistrationResult result = new UserRegistrationResult();
-//			when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.empty());
-//			when(messageSource.getMessage("registration.phoneNumber.duplicate", null, null)).thenReturn("error");
-//			when(userMapper.findPhoneNumber(form.getPhoneNumber())).thenReturn(Optional.of(form.getPhoneNumber()));
-//
-//			boolean isUnique = mailVerificationService.checkUniqueConstraint(form, result);
-//
-//			assertThat(isUnique).isFalse();
-//			assertThat(result.getErrors()).containsExactly(entry("phoneNumber", "error"));
-//		}
-//	}
+    }
 
 }
