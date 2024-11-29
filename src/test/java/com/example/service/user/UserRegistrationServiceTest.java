@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.data.redis.core.HashOperations;
@@ -33,6 +35,7 @@ import org.springframework.data.util.Pair;
 
 import com.example.domain.mapper.UserMapper;
 import com.example.domain.model.enums.Gender;
+import com.example.domain.model.result.UserRegistrationResult;
 import com.example.web.form.RegistrationForm;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +46,7 @@ class UserRegistrationServiceTest {
     @Mock
     UserMapper userMapper;
 
+    @Spy
     @InjectMocks
     UserRegistrationService userRegistrationService;
 
@@ -82,145 +86,127 @@ class UserRegistrationServiceTest {
     static Stream<Arguments> provideUniqueCheckData() {
         return Stream.of(
                 Arguments.of("全てユニーク", "test@example.com", "09012345678", true, true,
-                        Collections.emptyList()),
+                        Collections.emptyList(), true),
                 Arguments.of("eメールが重複", "test@example.com", "09012345678", false, true,
-                        List.of("email")),
+                        List.of("email"), false),
                 Arguments.of("電話番号が重複", "test@example.com", "09012345678", true, false,
-                        List.of("phoneNumber")),
+                        List.of("phoneNumber"), false),
                 Arguments.of("全て重複", "test@example.com", "09012345678", false, false,
-                        List.of("email", "phoneNumber")));
+                        List.of("email", "phoneNumber"), false));
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideUniqueCheckData")
-    void checkUniqueConstraint(String pattern, String email, String phoneNumber, boolean isEmailUnique,
-            boolean isPhoneNumberUnique, List<String> errorFields) {
-        when(userMapper.emailNotExists(email)).thenReturn(isEmailUnique);
-        when(userMapper.phoneNumberNotExists(phoneNumber)).thenReturn(isPhoneNumberUnique);
+    void checkUniqueConstraint(String pattern, String email, String phoneNumber, boolean emailUnique,
+            boolean phoneUnique, List<String> errorFields, boolean expected) {
+        when(userMapper.isEmailUnique(email)).thenReturn(emailUnique);
+        when(userMapper.isPhoneNumberUnique(phoneNumber)).thenReturn(phoneUnique);
 
-        // 以下だとフォーマットしても戻らない
-        errorFields.stream().forEach(field -> when(messageSource.getMessage(field + ".duplicate",
-                null, null)));
-        // 以下のようにしたい
-        //        errorFields.stream().forEach(field ->
-        //        when(messageSource.getMessage(field + ".duplicate", null, null)));
+        errorFields.stream()
+                .forEach(field -> when(messageSource.getMessage(field + ".duplicate", null, null))
+                        .thenReturn("error"));
 
-    }
+        UserRegistrationResult result = new UserRegistrationResult();
+        boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
 
-    //    @Nested
-    //    class checkUniqueConstraint {
-    //
-    //        @Test
-    //        void checkUniqueConstraint_AllUnique() {
-    //            UserRegistrationResult result = new UserRegistrationResult();
-    //            when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.empty());
-    //            when(userMapper.findPhoneNumber(form.getPhoneNumber())).thenReturn(Optional.empty());
-    //
-    //            boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
-    //
-    //            assertThat(isUnique).isTrue();
-    //            assertThat(result.getErrors()).isEmpty();
-    //
-    //        }
-    //
-    //        @Test
-    //        void checkUniqueConstraint_EmailExists() {
-    //            UserRegistrationResult result = new UserRegistrationResult();
-    //            when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.of(form.getEmail()));
-    //            when(messageSource.getMessage("registration.email.duplicate", null, null)).thenReturn("error");
-    //
-    //            boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
-    //
-    //            assertThat(isUnique).isFalse();
-    //            assertThat(result.getErrors()).containsExactly(entry("email", "error"));
-    //        }
-    //
-    //        @Test
-    //        void checkUniqueConstraint_PhoneNumberExists() {
-    //            UserRegistrationResult result = new UserRegistrationResult();
-    //            when(userMapper.findEmail(form.getEmail())).thenReturn(Optional.empty());
-    //            when(userMapper.findPhoneNumber(form.getPhoneNumber())).thenReturn(Optional.of(form.getPhoneNumber()));
-    //            when(messageSource.getMessage("registration.phoneNumber.duplicate", null, null)).thenReturn("error");
-    //
-    //            boolean isUnique = userRegistrationService.checkUniqueConstraint(form, result);
-    //
-    //            assertThat(isUnique).isFalse();
-    //            assertThat(result.getErrors()).containsExactly(entry("phoneNumber", "error"));
-    //        }
-    //
-            @Nested
-            class saveTempRegistrationInfo {
-                Map<String, Object> map = new HashMap<String, Object>();
-    
-                @BeforeEach
-                void setup() {
-                    map.put("email", form.getEmail());
-                    map.put("password", form.getPassword());
-                    map.put("lastNameKanji", form.getLastNameKanji());
-                    map.put("firstNameKanji", form.getFirstNameKanji());
-                    map.put("lastNameKana", form.getLastNameKana());
-                    map.put("firstNameKana", form.getFirstNameKana());
-                    map.put("gender", form.getGender());
-                    map.put("birthDate", form.getBirthDate());
-                    map.put("postCode", form.getPostCode());
-                    map.put("prefectureId", form.getPrefectureId());
-                    map.put("address1", form.getAddress1());
-                    map.put("address2", form.getAddress2());
-                    map.put("phoneNumber", form.getPhoneNumber());
-                }
-    
-                @SuppressWarnings("unchecked")
-                @Test
-                void saveTempRegistrationInfo_Success() {
-    
-                    UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-                    try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class);
-                            // TODO どこで改行するか
-                            MockedConstruction<Random> mockedRandom = mockConstruction(Random.class,
-                                    (mock, context) -> {
-                                        when(mock.nextInt(999999 + 1)).thenReturn(123456);
-                                    })) {
-                        when(objectMapper.convertValue(eq(form), any(TypeReference.class))).thenReturn(map);
-    
-                        when(template.opsForHash()).thenReturn(hashOperations);
-                        mockedUUID.when(UUID::randomUUID).thenReturn(uuid);
-                        String userId = uuid.toString();
-                        userRegistrationService.expirationTimeMinutes = 10;
-    
-                        Pair<String, String> result = userRegistrationService.saveTempRegistrationInfo(form);
-    
-                        assertThat(result.getFirst()).isEqualTo(userId);
-                        assertThat(result.getSecond()).isEqualTo("123456");
-                        verify(hashOperations).putAll("mail_verification:" + userId, map);
-                        verify(template).expire("mail_verification:" + userId, 10, TimeUnit.MINUTES);
-                    }
-                }
-    
-            }
+        assertThat(isUnique).isEqualTo(isUnique).isEqualTo(expected);
+
+        if (errorFields.isEmpty()) {
+            assertThat(result.getErrors()).isEmpty();
+        } else {
+            Map<String, String> expectedErrors = errorFields.stream().collect(Collectors.toMap(field -> field,
+                    field -> "error"));
+            assertThat(result.getErrors()).containsExactlyEntriesOf(expectedErrors);
         }
+
+        @Nested
+        class saveTempRegistrationInfo {
+            Map<String, Object> map = new HashMap<String, Object>();
+
+            @BeforeEach
+            void setup() {
+                map.put("email", form.getEmail());
+                map.put("password", form.getPassword());
+                map.put("lastNameKanji", form.getLastNameKanji());
+                map.put("firstNameKanji", form.getFirstNameKanji());
+                map.put("lastNameKana", form.getLastNameKana());
+                map.put("firstNameKana", form.getFirstNameKana());
+                map.put("gender", form.getGender());
+                map.put("birthDate", form.getBirthDate());
+                map.put("postCode", form.getPostCode());
+                map.put("prefectureId", form.getPrefectureId());
+                map.put("address1", form.getAddress1());
+                map.put("address2", form.getAddress2());
+                map.put("phoneNumber", form.getPhoneNumber());
+            }
+
+            @SuppressWarnings("unchecked")
+            @Test
+            void saveTempRegistrationInfo_Success() {
+
+                UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+                try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class);
+                        // TODO どこで改行するか
+                        MockedConstruction<Random> mockedRandom = mockConstruction(Random.class,
+                                (mock, context) -> {
+                                    when(mock.nextInt(999999 + 1)).thenReturn(123456);
+                                })) {
+                    when(objectMapper.convertValue(eq(form), any(TypeReference.class))).thenReturn(map);
+
+                    when(template.opsForHash()).thenReturn(hashOperations);
+                    mockedUUID.when(UUID::randomUUID).thenReturn(uuid);
+                    String userId = uuid.toString();
+                    userRegistrationService.expirationTimeMinutes = 10;
+
+                    Pair<String, String> result = userRegistrationService.saveTempRegistrationInfo(form);
+
+                    assertThat(result.getFirst()).isEqualTo(userId);
+                    assertThat(result.getSecond()).isEqualTo("123456");
+                    verify(hashOperations).putAll("mail_verification:" + userId, map);
+                    verify(template).expire("mail_verification:" + userId, 10, TimeUnit.MINUTES);
+                }
+            }
+
+        }
+    }
 
     @Nested
     class registerTempUser {
-        //		@Test
-        //		void registerTempUser_Success() {
-        //			when(mailVerificationService.isRegistrationLocked(form.getEmail())).thenReturn(false);
-        //			when(mailVerificationService.checkUniqueConstraint(eq(form), any(UserRegistrationResult.class)))
-        //					.thenReturn(true);
-        //
-        //			UserRegistrationResult result = userService.registerTempUser(form);
-        //
-        //			assertThat(result.isSuccess()).isTrue();
-        //		}
+        @Test
+        void registerTempUser_Success() {
+            when(template.hasKey("user_registration_lock:" + form.getEmail())).thenReturn(false);
+            doReturn(true).when(userRegistrationService).checkUniqueConstraint(eq(form),
+                    any(UserRegistrationResult.class));
+            doReturn(Pair.of("123e4567-e89b-12d3-a456-426614174000", "123456")).when(userRegistrationService)
+                    .saveTempRegistrationInfo(form);
 
-        //		@Test
-        //		void registerTempUser_NotUnique() {
-        //			when(mailVerificationService.checkUniqueConstraint(eq(form), any(UserRegistrationResult.class)))
-        //			.thenReturn(false);
-        //
-        //			UserRegistrationResult result = userService.registerTempUser(form);
-        //
-        //			assertThat(result.isSuccess()).isFalse();
-        //		}
+            UserRegistrationResult result = userRegistrationService.registerTempUser(form);
+
+            assertThat(result.isSuccess()).isTrue();
+            assertThat(result.getUserId()).isEqualTo("123e4567-e89b-12d3-a456-426614174000");
+        }
+
+        @Test
+        void registerTempUser_Locked() {
+            when(template.hasKey("user_registration_lock:" + form.getEmail())).thenReturn(true);
+            when(messageSource.getMessage("registration.locked", null, null)).thenReturn("error");
+
+            UserRegistrationResult result = userRegistrationService.registerTempUser(form);
+
+            assertThat(result.isSuccess()).isFalse();
+            assertThat(result.getErrors()).containsExactly(entry("global", "error"));
+        }
+
+        @Test
+        void registerTempUser_NotUnique() {
+            when(template.hasKey("user_registration_lock:" + form.getEmail())).thenReturn(false);
+            doReturn(false).when(userRegistrationService).checkUniqueConstraint(eq(form),
+                    any(UserRegistrationResult.class));
+
+            UserRegistrationResult result = userRegistrationService.registerTempUser(form);
+
+            assertThat(result.isSuccess()).isFalse();
+        }
 
     }
 

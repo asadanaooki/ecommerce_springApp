@@ -109,15 +109,9 @@ public class UserRegistrationService {
     Pair<String, String> saveTempRegistrationInfo(RegistrationForm form) {
         String userId = UUID.randomUUID().toString();
         String code = String.format("%06d", new Random().nextInt(MAX_CODE + 1));
-        
-         // TODO
+
         Map<String, Object> map = objectMapper.convertValue(form,
-                new TypeReference<Map<String, Object>>() {
-                });
-        // 以下のようにしたい
-        //        Map<String, Object> map = objectMapper.convertValue(form, 
-        //                new TypeReference<Map<String, Object>>() {});
-        
+                new TypeReference<Map<String, Object>>() {});
         map.put("code", code);
 
         // キー名を設定
@@ -150,12 +144,12 @@ public class UserRegistrationService {
     boolean checkUniqueConstraint(RegistrationForm form, UserRegistrationResult result) {
         boolean isUnique = true;
         // eメールの制約
-        if (isEmailRegistered(form.getEmail())) {
+        if (!isEmailUnique(form.getEmail())) {
             result.addError("email", messageSource.getMessage("email.duplicate", null, null));
             isUnique = false;
         }
         // 電話番号の制約
-        if (isPhoneNumberRegistered(form.getPhoneNumber())) {
+        if (!isPhoneNumberUnique(form.getPhoneNumber())) {
             result.addError("phoneNumber", messageSource.getMessage("phoneNumber.duplicate", null, null));
             isUnique = false;
         }
@@ -163,22 +157,22 @@ public class UserRegistrationService {
     }
 
     /**
-     * 電話番号が登録済みか判定する
+     * 電話番号がユニークか判定する
      * 
      * @param phoneNumber 電話番号
-     * @return true:登録済み false:未登録
+     * @return true:ユニーク false:ユニークでない
      */
-    private boolean isPhoneNumberRegistered(String phoneNumber) {
-        return userMapper.phoneNumberNotExists(phoneNumber);
+    private boolean isPhoneNumberUnique(String phoneNumber) {
+        return userMapper.isPhoneNumberUnique(phoneNumber);
     }
 
     /**
-     * メールアドレスが登録済みか判定する
+     * メールアドレスがユニークか判定する
      * 
      * @param email メールアドレス
-     * @return true:登録済み false:未登録
+     * @return true:ユニーク false:ユニークでない
      */
-    private boolean isEmailRegistered(String email) {
-        return userMapper.emailNotExists(email);
+    private boolean isEmailUnique(String email) {
+        return userMapper.isEmailUnique(email);
     }
 }

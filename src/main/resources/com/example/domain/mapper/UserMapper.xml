@@ -10,7 +10,7 @@
 		#{email}
 	</select>
 
-	<select id="phoneNumberNotExists" resultType="boolean">
+	<select id="isPhoneNumberUnique" resultType="boolean">
 		SELECT NOT EXISTS
 		(
 		SELECT 1
@@ -19,7 +19,7 @@
 		)
 	</select>
 
-	<select id="emailNotExists" resultType="boolean">
+	<select id="isEmailUnique" resultType="boolean">
 		SELECT NOT EXISTS (
 		SELECT 1
 		FROM user

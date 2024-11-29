@@ -15,17 +15,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.example.domain.model.result.UserRegistrationResult;
 import com.example.service.user.PrefectureService;
 import com.example.service.user.UserRegistrationService;
-import com.example.web.form.LoginForm;
 import com.example.web.form.RegistrationForm;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * ユーザー関連のコントローラー
  */
 @Controller
-@AllArgsConstructor
-public class UserController {
+@RequiredArgsConstructor
+public class UserRegistrationController {
 
 	/**
 	 * ユーザー関連のサービス
@@ -36,36 +35,6 @@ public class UserController {
 	 * 都道府県データ関連のサービス
 	 */
 	private final PrefectureService prefectureService;
-
-	/**
-	 * ログイン画面を表示
-	 * 
-	 * @param form ログイン情報
-	 * @return ログイン画面のテンプレート
-	 */
-	@GetMapping("/login")
-	public String showLoginForm(@ModelAttribute("form") LoginForm form) {
-		return "user/login";
-	}
-
-	/**
-	 * ログイン処理を行います。
-	 * <p>
-	 * 入力内容のバリデーションを行い、エラーがあればログイン画面を再表示します。 正常であればログイン処理を他のエンドポイントに転送します。
-	 * </p>
-	 * 
-	 * @param form   ログインフォームオブジェクト
-	 * @param result 入力検証の結果
-	 * @param model  ビューに渡すデータ
-	 * @return 次に表示するテンプレートまたは処理
-	 */
-	@PostMapping("/login")
-	public String login(@Valid @ModelAttribute("form") LoginForm form, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			return "user/login";
-		}
-		return "forward:/process-login";
-	}
 
 	/**
 	 * ユーザー登録フォームを表示します。
@@ -96,7 +65,7 @@ public class UserController {
 			Model model, HttpServletResponse response) {
 		if (result.hasErrors()) {
 			addPrefectureList(model);
-			return "user/registration";
+			return showRegistrationForm(form, model);
 		}
 
 		UserRegistrationResult regResult = userRegistrationService.registerTempUser(form);
@@ -109,11 +78,11 @@ public class UserController {
 		}
 
 		// クッキーの設定
-		ResponseCookie cookie = ResponseCookie.from("userId", regResult.getUserId())
-				.httpOnly(true).secure(true).sameSite("Strict").build();
-		
+		ResponseCookie cookie = ResponseCookie.from("userId", regResult.getUserId()).httpOnly(true).secure(true)
+				.sameSite("Strict").build();
+
 		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-		
+
 		return "redirect:/user/verificationCodeInput";
 	}
 

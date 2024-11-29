@@ -45,7 +45,7 @@ import com.example.web.form.RegistrationForm;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserControllerTest {
+class LoginControllerTest {
 
 	// URLs
 	static final String LOGIN_URL = "/login";

@@ -12,7 +12,7 @@ import org.springframework.util.Assert;
 
 import com.example.domain.mapper.UserMapper;
 import com.example.domain.model.entity.User;
-import com.example.domain.model.security.CustomUserDetails;
+import com.example.domain.model.security.LoginUserDetail;
 
 import lombok.AllArgsConstructor;
 
@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
  */
 @Service
 @AllArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+public class LoginService implements UserDetailsService {
 	
 	/**
 	 * null引数を許容しない場合にスローする例外メッセージ
@@ -38,13 +38,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Assert.notNull(username, CustomUserDetailsService.NULL_ARGUMENT_MESSAGE);
+		Assert.notNull(username, LoginService.NULL_ARGUMENT_MESSAGE);
 		User user = userMapper.findUserCredentialsByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException(null));
 
 		GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName());
 		
-		return new CustomUserDetails(user.getUserId(), username, user.getPassword(),
+		return new LoginUserDetail(user.getUserId(), username, user.getPassword(),
 				Collections.singletonList(authority));
 	}
 }
