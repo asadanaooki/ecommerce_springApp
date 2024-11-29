@@ -16,11 +16,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.example.domain.model.entity.User;
 import com.example.domain.model.enums.UserRole;
-import com.example.domain.model.security.CustomUserDetails;
+import com.example.domain.model.security.LoginUserDetail;
 import com.example.domain.mapper.UserMapper;
 
 @SpringBootTest
-class CustomUserDetailsServiceTest {
+class LoginServiceTest {
 
 	private final String testUsername = "test@example.com";
 	private final String testPassword = "password";
@@ -43,7 +43,7 @@ class CustomUserDetailsServiceTest {
 
 		when(userMapper.findUserCredentialsByEmail(testUsername)).thenReturn(Optional.of(user));
 
-		CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(testUsername);
+		LoginUserDetail userDetails = (LoginUserDetail) userDetailsService.loadUserByUsername(testUsername);
 
 		assertThat(userDetails.getUsername()).isEqualTo(testUserId);
 		assertThat(userDetails.getEmail()).isEqualTo(testUsername);

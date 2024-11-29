@@ -39,13 +39,13 @@ import com.example.domain.model.entity.Prefecture;
 import com.example.domain.model.enums.Gender;
 import com.example.domain.model.result.UserRegistrationResult;
 import com.example.service.user.PrefectureService;
-import com.example.service.user.UserService;
+import com.example.service.user.UserRegistrationService;
 import com.example.web.form.LoginForm;
 import com.example.web.form.RegistrationForm;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UserControllerTest {
+class LoginControllerTest {
 
 	// URLs
 	static final String LOGIN_URL = "/login";
@@ -105,7 +105,7 @@ class UserControllerTest {
 	PrefectureService prefectureService;
 
 	@MockBean
-	UserService userService;
+	UserRegistrationService userRegistrationService;
 
 	@BeforeEach
 	void setUp() {
@@ -196,7 +196,7 @@ class UserControllerTest {
 			UserRegistrationResult result = new UserRegistrationResult();
 			result.setSuccess(true);
 
-			when(userService.registerTempUser(any(RegistrationForm.class))).thenReturn(result);
+			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(result);
 
 			mockMvc.perform(post("/user/register").with(csrf()).params(params)
 					.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().is3xxRedirection())
@@ -208,7 +208,7 @@ class UserControllerTest {
 			UserRegistrationResult regResult = new UserRegistrationResult();
 			regResult.setSuccess(false);
 			regResult.addError(FIELD_EMAIL, messageSource.getMessage("registration.email.duplicate", null, null));
-			when(userService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
+			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
 
 			MvcResult mvcResult = mockMvc
 					.perform(post("/user/register").with(csrf()).params(params)
@@ -225,7 +225,7 @@ class UserControllerTest {
 			regResult.setSuccess(true);
 			String userId = UUID.randomUUID().toString();
 			regResult.setUserId(userId);
-			when(userService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
+			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
 			
 			MvcResult result = mockMvc
 					.perform(post("/user/register").with(csrf()).params(params)

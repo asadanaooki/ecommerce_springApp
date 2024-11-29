@@ -11,7 +11,7 @@ import lombok.Getter;
  * アプリケーション固有のユーザー情報を管理する
  */
 @Getter
-public class CustomUserDetails extends User {
+public class LoginUserDetail extends User {
 
 	/**
 	 * メールアドレス
@@ -26,7 +26,7 @@ public class CustomUserDetails extends User {
 	 * @param password    ユーザーのパスワード
 	 * @param authorities ユーザーの権限情報
 	 */
-	public CustomUserDetails(String userId, String email, String password,
+	public LoginUserDetail(String userId, String email, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(userId, password, authorities);
 		this.email = email;
