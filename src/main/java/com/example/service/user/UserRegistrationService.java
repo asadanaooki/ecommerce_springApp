@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
+import com.example.constant.UserConstant;
 import com.example.domain.mapper.UserMapper;
 import com.example.domain.model.result.UserRegistrationResult;
 import com.example.web.form.RegistrationForm;
@@ -35,16 +36,6 @@ public class UserRegistrationService {
      * 認証コードの最大値
      */
     private final int MAX_CODE = 999999;
-
-    /**
-     * ユーザー仮登録情報関連の接頭辞
-     */
-    private final String MAIL_VERIFICATION_PREFIX = "mail_verification:";
-
-    /**
-     * ロック情報キーの接頭辞
-     */
-    private final String LOCK_PREFIX = "user_registration_lock:";
 
     /**
      * Redis操作を行うためのテンプレート
@@ -113,9 +104,10 @@ public class UserRegistrationService {
         Map<String, Object> map = objectMapper.convertValue(form,
                 new TypeReference<Map<String, Object>>() {});
         map.put("code", code);
+        map.put("userId", userId);
 
         // キー名を設定
-        String userIdKey = MAIL_VERIFICATION_PREFIX + userId;
+        String userIdKey = UserConstant.MAIL_VERIFICATION_PREFIX + userId;
 
         // ユーザー情報を保存
         template.opsForHash().putAll(userIdKey, map);
@@ -131,7 +123,7 @@ public class UserRegistrationService {
      * @return true:ロック中 false:未ロック
      */
     private boolean isRegistrationLocked(String email) {
-        return template.hasKey(LOCK_PREFIX + email);
+        return template.hasKey(UserConstant.LOCK_PREFIX + email);
     }
 
     /**

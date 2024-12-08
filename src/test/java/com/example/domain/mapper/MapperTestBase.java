@@ -6,7 +6,9 @@ import org.dbunit.IDatabaseTester;
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.jupiter.api.AfterAll;
@@ -110,5 +112,26 @@ public class MapperTestBase {
 
             return connection;
         }
+    }
+
+    /**
+     * 指定されたテーブル名とクエリに基づいてITableを返します。
+     *
+     * @param tableName テーブル名（データセット内で参照するエイリアス）
+     * @param query     実行するSQLクエリ
+     * @return ITable データセット内のテーブル
+     * @throws Exception データベース接続やクエリ実行の失敗時
+     */
+    public static ITable geTable(String tableName, String query) throws Exception {
+
+        // QueryDataSetを作成
+        QueryDataSet queryDataSet = new QueryDataSet(databaseTester.getConnection());
+
+        // 指定されたクエリとテーブル名でデータセットに追加
+        queryDataSet.addTable(tableName, query);
+
+        // 指定したテーブル名のITableを取得して返す
+        return queryDataSet.getTable(tableName);
+
     }
 }

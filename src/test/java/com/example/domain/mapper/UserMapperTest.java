@@ -2,14 +2,20 @@ package com.example.domain.mapper;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
+import org.dbunit.dataset.ITable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.example.domain.model.entity.User;
+import com.example.domain.model.enums.Gender;
+import com.example.domain.model.enums.UserRole;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -53,6 +59,86 @@ class UserMapperTest extends MapperTestBase {
     void findUserByEmail_notFound() {
         Optional<User> foundUser = userMapper.findUserCredentialsByEmail(NON_EXISTENT_EMAIL);
         assertThat(foundUser).isEmpty();
+    }
+
+    @Nested
+    class registerUser {
+        User user;
+
+        @BeforeEach
+        void setup() {
+            user = new User();
+            user.setUserId(EXPECTED_USER_ID);
+            user.setEmail(EXISTING_EMAIL);
+            user.setPassword(EXPECTED_PASSWORD);
+            user.setFirstNameKanji(EXPECTED_FIRST_NAME_KANJI);
+            user.setLastNameKanji(EXPECTED_LAST_NAME_KANJI);
+            user.setFirstNameKana(EXPECTED_FIRST_NAME_KANA);
+            user.setLastNameKana(EXPECTED_LAST_NAME_KANA);
+            user.setGender(Gender.FEMALE);
+            user.setBirthDate(EXPECTED_BIRTH_DATE);
+            user.setPostCode(EXPECTED_POST_CODE);
+            user.setPrefectureId(EXPECTED_PREFECTURE_ID);
+            user.setAddress1(EXPECTED_ADDRESS1);
+            user.setPhoneNumber(EXPECTED_PHONE_NUMBER);
+            user.setRole(UserRole.USER);
+        }
+
+        @Test
+        void registerUser_WithAddress2() throws Exception {
+            user.setAddress2(EXPECTED_ADDRESS2);
+
+            userMapper.registerUser(user);
+
+            String query = "SELECT * FROM \"user\" WHERE user_id = '" + EXPECTED_USER_ID + "'";
+            ITable table = geTable("User", query);
+
+            assertThat(table.getRowCount()).isEqualTo(1);
+
+            // 各フィールドの値を検証
+            assertThat(table.getValue(0, "user_id")).isEqualTo(EXPECTED_USER_ID);
+            assertThat(table.getValue(0, "email")).isEqualTo(EXISTING_EMAIL);
+            assertThat(table.getValue(0, "password")).isEqualTo(EXPECTED_PASSWORD);
+            assertThat(table.getValue(0, "first_name_kanji")).isEqualTo(EXPECTED_FIRST_NAME_KANJI);
+            assertThat(table.getValue(0, "last_name_kanji")).isEqualTo(EXPECTED_LAST_NAME_KANJI);
+            assertThat(table.getValue(0, "first_name_kana")).isEqualTo(EXPECTED_FIRST_NAME_KANA);
+            assertThat(table.getValue(0, "last_name_kana")).isEqualTo(EXPECTED_LAST_NAME_KANA);
+            assertThat(table.getValue(0, "gender")).isEqualTo(Gender.FEMALE.getCode());
+            assertThat(table.getValue(0, "birth_date").toString()).isEqualTo(EXPECTED_BIRTH_DATE.toString());
+            assertThat(table.getValue(0, "post_code")).isEqualTo(EXPECTED_POST_CODE);
+            assertThat(table.getValue(0, "prefecture_id")).isEqualTo(EXPECTED_PREFECTURE_ID);
+            assertThat(table.getValue(0, "address1")).isEqualTo(EXPECTED_ADDRESS1);
+            assertThat(table.getValue(0, "address2")).isEqualTo(EXPECTED_ADDRESS2);
+            assertThat(table.getValue(0, "phone_number")).isEqualTo(EXPECTED_PHONE_NUMBER);
+            assertThat(table.getValue(0, "role")).isEqualTo(UserRole.USER.getCode());
+        }
+        
+        @Test
+        void registerUser_WithoutAddress2() throws Exception {
+
+            userMapper.registerUser(user);
+
+            String query = "SELECT * FROM \"user\" WHERE user_id = '" + EXPECTED_USER_ID + "'";
+            ITable table = geTable("User", query);
+
+            assertThat(table.getRowCount()).isEqualTo(1);
+
+            // 各フィールドの値を検証
+            assertThat(table.getValue(0, "user_id")).isEqualTo(EXPECTED_USER_ID);
+            assertThat(table.getValue(0, "email")).isEqualTo(EXISTING_EMAIL);
+            assertThat(table.getValue(0, "password")).isEqualTo(EXPECTED_PASSWORD);
+            assertThat(table.getValue(0, "first_name_kanji")).isEqualTo(EXPECTED_FIRST_NAME_KANJI);
+            assertThat(table.getValue(0, "last_name_kanji")).isEqualTo(EXPECTED_LAST_NAME_KANJI);
+            assertThat(table.getValue(0, "first_name_kana")).isEqualTo(EXPECTED_FIRST_NAME_KANA);
+            assertThat(table.getValue(0, "last_name_kana")).isEqualTo(EXPECTED_LAST_NAME_KANA);
+            assertThat(table.getValue(0, "gender")).isEqualTo(Gender.FEMALE.getCode());
+            assertThat(table.getValue(0, "birth_date").toString()).isEqualTo(EXPECTED_BIRTH_DATE.toString());
+            assertThat(table.getValue(0, "post_code")).isEqualTo(EXPECTED_POST_CODE);
+            assertThat(table.getValue(0, "prefecture_id")).isEqualTo(EXPECTED_PREFECTURE_ID);
+            assertThat(table.getValue(0, "address1")).isEqualTo(EXPECTED_ADDRESS1);
+            assertThat(table.getValue(0, "phone_number")).isEqualTo(EXPECTED_PHONE_NUMBER);
+            assertThat(table.getValue(0, "role")).isEqualTo(UserRole.USER.getCode());
+        }
     }
 
 }

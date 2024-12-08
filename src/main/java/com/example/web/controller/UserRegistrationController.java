@@ -83,7 +83,7 @@ public class UserRegistrationController {
 
 		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-		return "redirect:/user/verificationCodeInput";
+		return "redirect:/user/verify-code";
 	}
 
 	/**

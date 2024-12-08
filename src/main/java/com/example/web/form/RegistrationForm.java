@@ -2,6 +2,7 @@ package com.example.web.form;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.example.domain.model.enums.Gender;
+import com.example.domain.model.enums.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -90,7 +92,7 @@ public class RegistrationForm {
 	 * 郵便番号
 	 */
 	@NotBlank(message = "{input.required}")
-	@Pattern(regexp = "\\d{7}", message = "{postCode.format}") // 郵便番号は半角数字7桁
+	@Digits(integer = 7, message = "{numeric.format}", fraction = 0)
 	private String postCode;
 
 	/**
@@ -118,5 +120,11 @@ public class RegistrationForm {
 	@NotBlank(message = "{input.required}")
 	@Pattern(regexp = "\\d{10,15}", message = "{phoneNumber.format}") // 電話番号は10〜15桁の半角数字
 	private String phoneNumber;
+
+	
+	/**
+	 * 権限
+	 */
+	private UserRole role = UserRole.USER;
 
 }

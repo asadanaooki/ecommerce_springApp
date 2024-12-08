@@ -35,4 +35,10 @@ public interface UserMapper {
      * @return true:ユニーク false: ユニークでない
      */
     boolean isEmailUnique(String email);
+
+    /**
+     * ユーザー登録を行う
+     * @param user ユーザー情報
+     */
+    void registerUser(User user);
 }
