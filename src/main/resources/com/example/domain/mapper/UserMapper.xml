@@ -21,7 +21,8 @@
 
 	<select id="isEmailUnique" resultType="boolean">
 		SELECT NOT EXISTS (
-		SELECT 1
+		SELECT
+		1
 		FROM user
 		WHERE email = #{email}
 		)

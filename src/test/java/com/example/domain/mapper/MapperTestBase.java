@@ -18,97 +18,97 @@ import org.junit.jupiter.api.BeforeEach;
  */
 public class MapperTestBase {
 
-	/**
-	 * ドライバ
-	 */
-	static final String DRIVER = org.h2.Driver.class.getName();
+    /**
+     * ドライバ
+     */
+    static final String DRIVER = org.h2.Driver.class.getName();
 
-	/**
-	 * URL
-	 */
-	static final String URL = "jdbc:h2:mem:testdb";
+    /**
+     * URL
+     */
+    static final String URL = "jdbc:h2:mem:testdb";
 
-	/**
-	 * ユーザー名
-	 */
-	static final String USER = "sa";
+    /**
+     * ユーザー名
+     */
+    static final String USER = "sa";
 
-	/**
-	 * パスワード
-	 */
-	static final String PASSWORD = "";
+    /**
+     * パスワード
+     */
+    static final String PASSWORD = "";
 
-	/**
-	 * DatabaseTesterインスタンス
-	 */
-	static IDatabaseTester databaseTester;
+    /**
+     * DatabaseTesterインスタンス
+     */
+    static IDatabaseTester databaseTester;
 
-	/**
-	 * テストデータのファイルパス
-	 */
-	final String testDataFilePath;
+    /**
+     * テストデータのファイルパス
+     */
+    final String testDataFilePath;
 
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param testDataFilePath テストデータのファイルパス
-	 */
-	protected MapperTestBase(String testDataFilePath) {
-		this.testDataFilePath = testDataFilePath;
-	}
+    /**
+     * コンストラクタ
+     * 
+     * @param testDataFilePath テストデータのファイルパス
+     */
+    protected MapperTestBase(String testDataFilePath) {
+        this.testDataFilePath = testDataFilePath;
+    }
 
-	/**
-	 * 全テスト共通のDB接続設定を初期化します。
-	 * 
-	 * @throws Exception 初期化時の例外
-	 */
-	@BeforeAll
-	static void setUpDbConnection() throws Exception {
-		databaseTester = new CustomJdbcDatabaseTester(DRIVER, URL, USER, PASSWORD);
-	}
+    /**
+     * 全テスト共通のDB接続設定を初期化します。
+     * 
+     * @throws Exception 初期化時の例外
+     */
+    @BeforeAll
+    static void setUpDbConnection() throws Exception {
+        databaseTester = new CustomJdbcDatabaseTester(DRIVER, URL, USER, PASSWORD);
+    }
 
-	/**
-	 * 各テストの実行前にテストデータをロードします。
-	 * 
-	 * @throws Exception テストデータのロード中の例外
-	 */
-	@BeforeEach
-	void loadTestData() throws Exception {
-		try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(testDataFilePath)) {
-			IDataSet dataSet = new FlatXmlDataSetBuilder().build(inputStream);
-			databaseTester.setDataSet(dataSet);
-			databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-			databaseTester.onSetup();
-		}
-	}
+    /**
+     * 各テストの実行前にテストデータをロードします。
+     * 
+     * @throws Exception テストデータのロード中の例外
+     */
+    @BeforeEach
+    void loadTestData() throws Exception {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(testDataFilePath)) {
+            IDataSet dataSet = new FlatXmlDataSetBuilder().build(inputStream);
+            databaseTester.setDataSet(dataSet);
+            databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+            databaseTester.onSetup();
+        }
+    }
 
-	/**
-	 * 全テスト終了後にデータベースをクリーンアップします。
-	 * 
-	 * @throws Exception クリーンアップ時の例外
-	 */
-	@AfterAll
-	static void tearDown() throws Exception {
-		databaseTester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
-		databaseTester.onTearDown();
-	}
+    /**
+     * 全テスト終了後にデータベースをクリーンアップします。
+     * 
+     * @throws Exception クリーンアップ時の例外
+     */
+    @AfterAll
+    static void tearDown() throws Exception {
+        databaseTester.setTearDownOperation(DatabaseOperation.DELETE_ALL);
+        databaseTester.onTearDown();
+    }
 
-	/**
-	 * カスタムDatabaseTesterクラス
-	 */
-	public static class CustomJdbcDatabaseTester extends JdbcDatabaseTester {
-		public CustomJdbcDatabaseTester(String driverClass, String connectionUrl, String username, String password)
-				throws Exception {
-			super(driverClass, connectionUrl, username, password);
-		}
+    /**
+     * カスタムDatabaseTesterクラス
+     */
+    public static class CustomJdbcDatabaseTester extends JdbcDatabaseTester {
+        public CustomJdbcDatabaseTester(String driverClass, String connectionUrl, String username, String password)
+                throws Exception {
+            super(driverClass, connectionUrl, username, password);
+        }
 
-		@Override
-		public IDatabaseConnection getConnection() throws Exception {
-			IDatabaseConnection connection = super.getConnection();
+        @Override
+        public IDatabaseConnection getConnection() throws Exception {
+            IDatabaseConnection connection = super.getConnection();
 
-			connection.getConfig().setProperty(DatabaseConfig.PROPERTY_ESCAPE_PATTERN, "\"?\"");
+            connection.getConfig().setProperty(DatabaseConfig.PROPERTY_ESCAPE_PATTERN, "\"?\"");
 
-			return connection;
-		}
-	}
+            return connection;
+        }
+    }
 }
