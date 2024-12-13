@@ -1,11 +1,15 @@
 package com.example.web.advice;
 
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.example.exception.BusinessException;
+import com.example.web.controller.error.ErrorResponse;
 
 import lombok.AllArgsConstructor;
 
@@ -20,19 +24,36 @@ public class GlobalExceptionHandler {
      * メッセージソース
      */
     private MessageSource messageSource;
-    
+
     /**
      * 業務例外をハンドリングする
      * @param e 業務例外
-     * @return modelAndView
+     * @return エラーレスポンス
      */
     @ExceptionHandler(BusinessException.class)
-    public ModelAndView handleBusinessException(BusinessException e) {
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         String message = messageSource.getMessage(e.getMessageKey(), null, null);
+        ErrorResponse response = new ErrorResponse(message);
         
-        ModelAndView mav = new ModelAndView(e.getViewName());
-        mav.addObject("error", message);
-        return mav;
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
+
     }
-    
+
+    /**
+     * バリデーションエラーをハンドリングする
+     * @param e BindException
+     * @return エラーレスポンス
+     */
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ErrorResponse> handleBindException(BindException e) {
+        ErrorResponse response = new ErrorResponse();
+
+        // エラー情報取得
+        for (FieldError fieldError : e.getFieldErrors()) {
+            String errorMessage = messageSource.getMessage(fieldError, null);
+            response.addTargetMessage(fieldError.getField(), errorMessage);
+        }
+        return ResponseEntity.badRequest().body(response);
+    }
+
 }

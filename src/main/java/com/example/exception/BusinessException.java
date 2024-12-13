@@ -12,22 +12,12 @@ public class BusinessException extends RuntimeException {
      * メッセージキー
      */
     private final String messageKey;
-    
-    /**
-     * 遷移先画面
-     */
-    private final String viewName;
-
 
     /**
      * @param messageKey
-     * @param viewName
      */
-    public BusinessException( String messageKey, String viewName) {
+    public BusinessException( String messageKey) {
         this.messageKey = messageKey;
-        this.viewName = viewName;
     }
     
-    
-
 }

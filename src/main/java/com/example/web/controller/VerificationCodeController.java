@@ -1,13 +1,11 @@
 package com.example.web.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,11 +33,10 @@ public class VerificationCodeController {
     /**
      * 認証コード入力画面を表示する
      * @param form 入力フォーム
-     * @param model モデル
      * @return 認証コード入力画面
      */
     @GetMapping("/verify-code")
-    public String showVerificationCodeForm(@ModelAttribute("form") VerificationCodeForm form, Model model) {
+    public String showVerificationCodeForm(@ModelAttribute("form") VerificationCodeForm form) {
         return "user/verificationCodeInput";
     }
 
@@ -52,19 +49,15 @@ public class VerificationCodeController {
      * @return 処理が成功すれば登録完了画面へリダイレクト
      */
     @PostMapping("/verify-code")
-    public String verifyInputCode(@CookieValue(value = "userId", required = true) String userId,
-            @Valid @ModelAttribute("form") VerificationCodeForm form, BindingResult result, Model model,HttpServletResponse response) {
-        if (result.hasErrors()) {
-            return showVerificationCodeForm(form, model);
-        }
+    public ResponseEntity<Void> verifyInputCode(@CookieValue(value = "userId", required = true) String userId,
+            @Valid VerificationCodeForm form) {
 
        verificationCodeService.processUserRegistration(userId, form);
 
         // クッキーからユーザーIDを削除する
        ResponseCookie cookie = ResponseCookie.from("userId","").maxAge(0).build();
-       response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         
-        return "redirect:/user/registrationComplete";
+       return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).build();
     }
     
 
