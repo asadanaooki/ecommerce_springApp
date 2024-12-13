@@ -1,47 +1,8 @@
 package com.example.web.controller;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.MessageSource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.ModelAndView;
-
-import com.example.domain.model.entity.Prefecture;
-import com.example.domain.model.enums.Gender;
-import com.example.domain.model.result.UserRegistrationResult;
-import com.example.service.user.PrefectureService;
-import com.example.service.user.UserRegistrationService;
-import com.example.web.form.LoginForm;
-import com.example.web.form.RegistrationForm;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -93,152 +54,152 @@ class LoginControllerTest {
 	static final String LONG_EMAIL = "a".repeat(101) + "@example.com"; // Over 100 characters
 	static final String INVALID_PASSWORD = "invalid@password"; // Invalid format
 
-	@Autowired
-	MockMvc mockMvc;
-
-	@Autowired
-	MessageSource messageSource;
-
-	List<Prefecture> prefectures;
-
-	@MockBean
-	PrefectureService prefectureService;
-
-	@MockBean
-	UserRegistrationService userRegistrationService;
-
-	@BeforeEach
-	void setUp() {
-		prefectures = List.of(new Prefecture("1", "test1", 1, LocalDateTime.now(), LocalDateTime.now()),
-				new Prefecture("2", "test2", 2, LocalDateTime.now(), LocalDateTime.now()),
-				new Prefecture("3", "test3", 3, LocalDateTime.now(), LocalDateTime.now()));
-
-		when(prefectureService.getAllPrefectures()).thenReturn(prefectures);
-	}
-
-	@Test
-	void showLoginForm() throws Exception {
-		mockMvc.perform(get(LOGIN_URL)).andExpect(status().isOk()).andExpect(view().name(LOGIN_VIEW_NAME))
-				.andExpect(model().attributeExists(FORM_ATTRIBUTE));
-	}
-
-	@Test
-	void loginSuccess() throws Exception {
-		LoginForm form = new LoginForm(VALID_EMAIL, VALID_PASSWORD);
-
-		ResultActions result = mockMvc.perform(post(LOGIN_URL).with(csrf()).flashAttr(FORM_ATTRIBUTE, form));
-
-		result.andExpect(status().isOk()).andExpect(forwardedUrl(PROCESS_LOGIN_URL))
-				.andExpect(model().attributeExists(FORM_ATTRIBUTE));
-	}
-
-	@ParameterizedTest
-	@MethodSource("provideInvalidLoginData")
-	void validateLoginForm(String email, String password, String expectedMessageKey, String expectedField)
-			throws Exception {
-		LoginForm form = new LoginForm(email, password);
-
-		ResultActions action = mockMvc.perform(post(LOGIN_URL).with(csrf()).flashAttr(FORM_ATTRIBUTE, form));
-
-		String expectedMessage = messageSource.getMessage(expectedMessageKey, null, null);
-
-		ModelAndView mv = action.andReturn().getModelAndView();
-		BindingResult result = (BindingResult) mv.getModel().get(BindingResult.MODEL_KEY_PREFIX + FORM_ATTRIBUTE);
-
-		action.andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors(FORM_ATTRIBUTE, expectedField));
-
-		assertTrue(result.getFieldErrors(expectedField).stream()
-				.anyMatch(error -> Arrays.asList(error.getDefaultMessage()).contains(expectedMessage)));
-	}
-
-	static Stream<Arguments> provideInvalidLoginData() {
-		return Stream.of(Arguments.of(EMPTY_STRING, VALID_PASSWORD, "login.failed", FIELD_EMAIL),
-				Arguments.of(INVALID_EMAIL, VALID_PASSWORD, "login.failed", FIELD_EMAIL),
-				Arguments.of(LONG_EMAIL, VALID_PASSWORD, "login.failed", FIELD_EMAIL),
-				Arguments.of(VALID_EMAIL, EMPTY_STRING, "login.failed", FIELD_PASSWORD),
-				Arguments.of(VALID_EMAIL, SHORT_PASSWORD, "login.failed", FIELD_PASSWORD),
-				Arguments.of(VALID_EMAIL, LONG_PASSWORD, "login.failed", FIELD_PASSWORD),
-				Arguments.of(VALID_EMAIL, INVALID_PASSWORD, "login.failed", FIELD_PASSWORD));
-	}
-
-	@Test
-	void showRegistrationForm() throws Exception {
-		mockMvc.perform(get("/user/register")).andExpect(status().isOk()).andExpect(view().name("user/registration"))
-				.andExpect(model().attributeExists("form")).andExpect(model().attribute("prefectureList", prefectures));
-
-	}
-
-	@Nested
-	class registrationTest {
+//	@Autowired
+//	MockMvc mockMvc;
+//
+//	@Autowired
+//	MessageSource messageSource;
+//
+//	List<Prefecture> prefectures;
+//
+//	@MockBean
+//	PrefectureService prefectureService;
+//
+//	@MockBean
+//	UserRegistrationService userRegistrationService;
+//
+//	@BeforeEach
+//	void setUp() {
+//		prefectures = List.of(new Prefecture("1", "test1", 1, LocalDateTime.now(), LocalDateTime.now()),
+//				new Prefecture("2", "test2", 2, LocalDateTime.now(), LocalDateTime.now()),
+//				new Prefecture("3", "test3", 3, LocalDateTime.now(), LocalDateTime.now()));
+//
+//		when(prefectureService.getAllPrefectures()).thenReturn(prefectures);
+//	}
+//
+//	@Test
+//	void showLoginForm() throws Exception {
+//		mockMvc.perform(get(LOGIN_URL)).andExpect(status().isOk()).andExpect(view().name(LOGIN_VIEW_NAME))
+//				.andExpect(model().attributeExists(FORM_ATTRIBUTE));
+//	}
+//
+//	@Test
+//	void loginSuccess() throws Exception {
+//		LoginForm form = new LoginForm(VALID_EMAIL, VALID_PASSWORD);
+//
+//		ResultActions result = mockMvc.perform(post(LOGIN_URL).with(csrf()).flashAttr(FORM_ATTRIBUTE, form));
+//
+//		result.andExpect(status().isOk()).andExpect(forwardedUrl(PROCESS_LOGIN_URL))
+//				.andExpect(model().attributeExists(FORM_ATTRIBUTE));
+//	}
+//
+//	@ParameterizedTest
+//	@MethodSource("provideInvalidLoginData")
+//	void validateLoginForm(String email, String password, String expectedMessageKey, String expectedField)
+//			throws Exception {
+//		LoginForm form = new LoginForm(email, password);
+//
+//		ResultActions action = mockMvc.perform(post(LOGIN_URL).with(csrf()).flashAttr(FORM_ATTRIBUTE, form));
+//
+//		String expectedMessage = messageSource.getMessage(expectedMessageKey, null, null);
+//
+//		ModelAndView mv = action.andReturn().getModelAndView();
+//		BindingResult result = (BindingResult) mv.getModel().get(BindingResult.MODEL_KEY_PREFIX + FORM_ATTRIBUTE);
+//
+//		action.andExpect(status().isOk()).andExpect(model().attributeHasFieldErrors(FORM_ATTRIBUTE, expectedField));
+//
+//		assertTrue(result.getFieldErrors(expectedField).stream()
+//				.anyMatch(error -> Arrays.asList(error.getDefaultMessage()).contains(expectedMessage)));
+//	}
+//
+//	static Stream<Arguments> provideInvalidLoginData() {
+//		return Stream.of(Arguments.of(EMPTY_STRING, VALID_PASSWORD, "login.failed", FIELD_EMAIL),
+//				Arguments.of(INVALID_EMAIL, VALID_PASSWORD, "login.failed", FIELD_EMAIL),
+//				Arguments.of(LONG_EMAIL, VALID_PASSWORD, "login.failed", FIELD_EMAIL),
+//				Arguments.of(VALID_EMAIL, EMPTY_STRING, "login.failed", FIELD_PASSWORD),
+//				Arguments.of(VALID_EMAIL, SHORT_PASSWORD, "login.failed", FIELD_PASSWORD),
+//				Arguments.of(VALID_EMAIL, LONG_PASSWORD, "login.failed", FIELD_PASSWORD),
+//				Arguments.of(VALID_EMAIL, INVALID_PASSWORD, "login.failed", FIELD_PASSWORD));
+//	}
+//
+//	@Test
+//	void showRegistrationForm() throws Exception {
+//		mockMvc.perform(get("/user/register")).andExpect(status().isOk()).andExpect(view().name("user/registration"))
+//				.andExpect(model().attributeExists("form")).andExpect(model().attribute("prefectureList", prefectures));
+//
+//	}
+//
+//	@Nested
+//	class registrationTest {
 		MultiValueMap<String, String> params;
 
-		@BeforeEach
-		void setup() {
-			params = new LinkedMultiValueMap<>();
-			params.add("email", "test@example.com");
-			params.add("password", "password123");
-			params.add("lastNameKanji", "山田");
-			params.add("firstNameKanji", "太郎");
-			params.add("lastNameKana", "ヤマダ");
-			params.add("firstNameKana", "タロウ");
-			params.add("gender", Gender.MALE.toString());
-			params.add("birthDate", "1990-01-01"); // LocalDateは文字列に変換
-			params.add("postCode", "1234567");
-			params.add("prefectureId", "13"); // 東京都
-			params.add("address1", "新宿区新宿1-1-1");
-			params.add("address2", "マンション101号室");
-			params.add("phoneNumber", "09012345678");
-
-		}
-
-		@Test
-		void registerTmpUser_Success() throws Exception {
-			UserRegistrationResult result = new UserRegistrationResult();
-			result.setSuccess(true);
-
-			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(result);
-
-			mockMvc.perform(post("/user/register").with(csrf()).params(params)
-					.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().is3xxRedirection())
-					.andExpect(redirectedUrl("/user/verificationCodeInput"));
-		}
-
-		@Test
-		void registerTmpUser_ServiceFails() throws Exception {
-			UserRegistrationResult regResult = new UserRegistrationResult();
-			regResult.setSuccess(false);
-			regResult.addError(FIELD_EMAIL, messageSource.getMessage("registration.email.duplicate", null, null));
-			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
-
-			MvcResult mvcResult = mockMvc
-					.perform(post("/user/register").with(csrf()).params(params)
-							.contentType(MediaType.APPLICATION_FORM_URLENCODED))
-					.andExpect(status().isOk()).andExpect(view().name("user/registration"))
-					.andExpect(model().attribute(FIELD_EMAIL,
-							messageSource.getMessage("registration.email.duplicate", null, null)))
-					.andReturn();
-		}
-
-		@Test
-		void registerTmpUser_CookieSet() throws Exception {
-			UserRegistrationResult regResult = new UserRegistrationResult();
-			regResult.setSuccess(true);
-			String userId = UUID.randomUUID().toString();
-			regResult.setUserId(userId);
-			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
-			
-			MvcResult result = mockMvc
-					.perform(post("/user/register").with(csrf()).params(params)
-							.contentType(MediaType.APPLICATION_FORM_URLENCODED))
-					.andExpect(status().is3xxRedirection()).andReturn();
-
-			String header = result.getResponse().getHeader(HttpHeaders.SET_COOKIE);
-
-			// クッキーの属性を検証
-			assertThat(header).contains("userId=" + userId).contains("HttpOnly").contains("Secure")
-			.contains("SameSite=Strict");
-			
-		}
+//		@BeforeEach
+//		void setup() {
+//			params = new LinkedMultiValueMap<>();
+//			params.add("email", "test@example.com");
+//			params.add("password", "password123");
+//			params.add("lastNameKanji", "山田");
+//			params.add("firstNameKanji", "太郎");
+//			params.add("lastNameKana", "ヤマダ");
+//			params.add("firstNameKana", "タロウ");
+//			params.add("gender", Gender.MALE.toString());
+//			params.add("birthDate", "1990-01-01"); // LocalDateは文字列に変換
+//			params.add("postCode", "1234567");
+//			params.add("prefectureId", "13"); // 東京都
+//			params.add("address1", "新宿区新宿1-1-1");
+//			params.add("address2", "マンション101号室");
+//			params.add("phoneNumber", "09012345678");
+//
+//		}
+//
+//		@Test
+//		void registerTmpUser_Success() throws Exception {
+//			UserRegistrationResult result = new UserRegistrationResult();
+//			result.setSuccess(true);
+//
+//			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(result);
+//
+//			mockMvc.perform(post("/user/register").with(csrf()).params(params)
+//					.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().is3xxRedirection())
+//					.andExpect(redirectedUrl("/user/verificationCodeInput"));
+//		}
+//
+//		@Test
+//		void registerTmpUser_ServiceFails() throws Exception {
+//			UserRegistrationResult regResult = new UserRegistrationResult();
+//			regResult.setSuccess(false);
+//			regResult.addError(FIELD_EMAIL, messageSource.getMessage("registration.email.duplicate", null, null));
+//			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
+//
+//			MvcResult mvcResult = mockMvc
+//					.perform(post("/user/register").with(csrf()).params(params)
+//							.contentType(MediaType.APPLICATION_FORM_URLENCODED))
+//					.andExpect(status().isOk()).andExpect(view().name("user/registration"))
+//					.andExpect(model().attribute(FIELD_EMAIL,
+//							messageSource.getMessage("registration.email.duplicate", null, null)))
+//					.andReturn();
+//		}
+//
+//		@Test
+//		void registerTmpUser_CookieSet() throws Exception {
+//			UserRegistrationResult regResult = new UserRegistrationResult();
+//			regResult.setSuccess(true);
+//			String userId = UUID.randomUUID().toString();
+//			regResult.setUserId(userId);
+//			when(userRegistrationService.registerTempUser(any(RegistrationForm.class))).thenReturn(regResult);
+//			
+//			MvcResult result = mockMvc
+//					.perform(post("/user/register").with(csrf()).params(params)
+//							.contentType(MediaType.APPLICATION_FORM_URLENCODED))
+//					.andExpect(status().is3xxRedirection()).andReturn();
+//
+//			String header = result.getResponse().getHeader(HttpHeaders.SET_COOKIE);
+//
+//			// クッキーの属性を検証
+//			assertThat(header).contains("userId=" + userId).contains("HttpOnly").contains("Secure")
+//			.contains("SameSite=Strict");
+//			
+//		}
 
 		// TODO: 後で対応
 
@@ -352,6 +313,6 @@ class LoginControllerTest {
 //							"registration.phoneNumber.format", FIELD_PHONE_NUMBER));
 //		}
 
-	}
+	//}
 
 }

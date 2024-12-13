@@ -37,6 +37,7 @@ public class UserConverter {
         user.setAddress1(form.getAddress1());
         user.setAddress2(form.getAddress2());
         user.setPhoneNumber(form.getPhoneNumber());
+        user.setRole(null);
         return user;
     }
 

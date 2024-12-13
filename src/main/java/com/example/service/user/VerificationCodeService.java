@@ -51,48 +51,42 @@ public class VerificationCodeService {
 
         // ユーザーの存在確認
         if (!template.hasKey(key)) {
-            throw new BusinessException("verificationCode.expired",
-                    UserConstant.VIEW_NAME_VERIFICATION_CODE_INPUT);
+            throw new BusinessException("verificationCode.expired");
         }
-        // 認証コードを照合する
-        VerifyInputCode(key, form.getCode());
+        
+        Map<String, String> hash = template.<String, String> opsForHash().entries(key);
+        
+        // 照合成功時
+        if (hash.get("code").equals(form.getCode())) {
+            // ユーザー情報登録
+            userMapper.insertSelective(UserConverter.toEntity(hash, passwordEncoder));
+            // 仮登録情報を削除
+            template.delete(key);
+            return;
+        }
+        // 照合失敗時
+        handleVerificationFailure(key, hash);
     }
 
     /**
-     * 入力された認証コードを検証する
-     * @param key      Redisキー
-     * @param inputCode ユーザーが入力した認証コード
+     * 照合失敗時の処理を行う
+     * @param key redisキー
+     * @param hash ユーザー情報
      */
-    private void VerifyInputCode(String key, String inputCode) {
-        Map<String, String> hash = template.<String, String> opsForHash().entries(key);
+    private void handleVerificationFailure(String key, Map<String, String> hash) {
+        // 試行回数をインクリメント
+        int attempt = template.opsForHash().increment(key, "attempt", 1).intValue();
 
-        // 照合成功時
-        if (hash.get("code").equals(inputCode)) {
-            // ユーザー情報登録
-            userMapper.registerUser(UserConverter.toEntity(hash, passwordEncoder));
+        // 最大試行回数に達した場合
+        if (attempt >= MAX_ATTEMPT) {
+            String lockKey = UserConstant.LOCK_PREFIX + hash.get("email");
+            template.opsForValue().set(lockKey, "");
             // 仮登録情報を削除
             template.delete(key);
+
+            throw new BusinessException("registration.locked");
         }
-        // 照合失敗時
-        else {
-            // 試行回数をインクリメント
-            int attempt = template.opsForHash().increment(key, "attempt", 1).intValue();
-
-            // 最大試行回数に達した場合
-            if (attempt >= MAX_ATTEMPT) {
-                String lockKey = UserConstant.LOCK_PREFIX + hash.get("email");
-                template.opsForValue().set(lockKey, "");
-                // 仮登録情報を削除
-                template.delete(key);
-
-                throw new BusinessException("registration.locked",
-                        UserConstant.VIEW_NAME_VERIFICATION_CODE_INPUT);
-            }
-            // 最大試行回数に達していない場合
-            throw new BusinessException("registration.invalid",
-                    UserConstant.VIEW_NAME_VERIFICATION_CODE_INPUT);
-        }
-
+        // 最大試行回数に達していない場合
+        throw new BusinessException("registration.invalid");
     }
-
 }

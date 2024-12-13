@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.domain.mapper.PrefectureMapper;
 import com.example.domain.model.entity.Prefecture;
+import com.example.domain.model.entity.PrefectureExample;
 
 import lombok.AllArgsConstructor;
 
@@ -28,7 +29,7 @@ public class PrefectureService {
      */
     @Cacheable("prefecture")
     public List<Prefecture> getAllPrefectures() {
-        return prefectureMapper.getAllPrefectures();
+        return prefectureMapper.selectByExample(new PrefectureExample());
     }
 
 }

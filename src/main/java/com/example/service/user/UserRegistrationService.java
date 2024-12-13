@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.constant.UserConstant;
 import com.example.domain.mapper.UserMapper;
+import com.example.domain.model.entity.UserExample;
 import com.example.domain.model.result.UserRegistrationResult;
 import com.example.web.form.RegistrationForm;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -155,7 +156,10 @@ public class UserRegistrationService {
      * @return true:ユニーク false:ユニークでない
      */
     private boolean isPhoneNumberUnique(String phoneNumber) {
-        return userMapper.isPhoneNumberUnique(phoneNumber);
+        UserExample example = new UserExample();
+        example.createCriteria().andPhoneNumberEqualTo(phoneNumber);
+        
+        return userMapper.selectByExample(example).isEmpty();
     }
 
     /**
@@ -165,6 +169,9 @@ public class UserRegistrationService {
      * @return true:ユニーク false:ユニークでない
      */
     private boolean isEmailUnique(String email) {
-        return userMapper.isEmailUnique(email);
+        UserExample example = new UserExample();
+        example.createCriteria().andEmailEqualTo(email);
+        
+        return userMapper.selectByExample(example).isEmpty();
     }
 }
