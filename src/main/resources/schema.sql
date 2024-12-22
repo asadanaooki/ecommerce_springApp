@@ -12,12 +12,14 @@ CREATE TABLE `user` (
     post_code VARCHAR(10) NOT NULL,
     prefecture_id CHAR(60) NOT NULL,
     address1 VARCHAR(255) NOT NULL,
-    address2 VARCHAR(255) NOT NULL,
+    address2 VARCHAR(255),
     phone_number VARCHAR(15) NOT NULL UNIQUE,
     role CHAR(1) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id)
+    PRIMARY KEY (user_id),
+    CONSTRAINT fk_prefecture FOREIGN KEY (prefecture_id)
+    REFERENCES prefecture(prefecture_id)
 );
 
 --都道府県テーブル

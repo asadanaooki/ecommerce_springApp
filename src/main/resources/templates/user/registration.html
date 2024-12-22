@@ -75,7 +75,7 @@
 
 		<!-- 郵便番号 -->
 		<div>
-			<label for="postCode">郵便番号:</label> <input type="text"
+			<label for="postCode">郵便番号:</label> <input type="number"
 				th:field="*{postCode}" />
 			<div th:if="${#fields.hasErrors('postCode')}" th:errors="*{postCode}"></div>
 		</div>

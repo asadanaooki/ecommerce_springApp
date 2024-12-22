@@ -1,6 +1,7 @@
 package com.example.service.user;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,6 +13,7 @@ import org.springframework.util.Assert;
 
 import com.example.domain.mapper.UserMapper;
 import com.example.domain.model.entity.User;
+import com.example.domain.model.entity.UserExample;
 import com.example.domain.model.security.LoginUserDetail;
 
 import lombok.AllArgsConstructor;
@@ -39,7 +41,11 @@ public class LoginService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Assert.notNull(username, LoginService.NULL_ARGUMENT_MESSAGE);
-		User user = userMapper.findUserCredentialsByEmail(username)
+		UserExample example = new UserExample();
+		example.createCriteria().andEmailEqualTo(username);
+		
+		List<User> users = userMapper.selectByExample(example);
+		User user = users.stream().findFirst()
 				.orElseThrow(() -> new UsernameNotFoundException(null));
 
 		GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName());

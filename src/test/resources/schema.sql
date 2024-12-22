@@ -12,7 +12,7 @@ CREATE TABLE "user" (
     post_code VARCHAR(10) NOT NULL,
     prefecture_id CHAR(60) NOT NULL,
     address1 VARCHAR(255) NOT NULL,
-    address2 VARCHAR(255) NOT NULL,
+    address2 VARCHAR(255),
     phone_number VARCHAR(15) NOT NULL UNIQUE,
     role CHAR(1) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
