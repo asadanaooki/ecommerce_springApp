@@ -1,7 +1,6 @@
 package com.example.web.advice;
 
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -32,10 +31,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+        // TODO: SSRと共通化し、ErrorResponseも修正する
+        
         String message = messageSource.getMessage(e.getMessageKey(), null, null);
         ErrorResponse response = new ErrorResponse(message);
         
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
+        return ResponseEntity.badRequest().body(response);
 
     }
 
