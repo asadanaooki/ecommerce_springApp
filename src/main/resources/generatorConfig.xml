@@ -44,9 +44,13 @@
 			targetPackage="com.example.domain.mapper"
 			targetProject="src/main/java/" type="XMLMAPPER" />
 
+<!--TODO: 将来的にフォルダを分ける-->
 		<!-- 生成対象のテーブル -->
 		<table tableName="user" />
 		<table tableName="prefecture"/>
+		<table tableName="product" />
+		<table tableName="category" />
+		<table tableName="review" />
 
 	</context>
 </generatorConfiguration>
