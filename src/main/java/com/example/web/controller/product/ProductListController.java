@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.converter.product.ProductConverter;
 import com.example.domain.model.dto.ProductSearchResponseDto;
 import com.example.domain.model.enums.SortKey;
 import com.example.service.product.ProductListService;
@@ -65,7 +64,7 @@ public class ProductListController {
         adjustParameter(form, result);
 
         // DTO に変換したフォーム情報をもとに商品検索を行う
-        ProductSearchResponseDto searchResult = productListService.searchProducts(ProductConverter.toDto(form));
+        ProductSearchResponseDto searchResult = productListService.searchProducts(form.toDto());
         model.addAttribute("result", searchResult);
 
         return "product/productList";

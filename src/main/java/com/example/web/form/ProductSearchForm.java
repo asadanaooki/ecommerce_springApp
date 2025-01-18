@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.example.domain.model.dto.ProductSearchRequestDto;
+import com.example.domain.model.enums.SortKey;
 import com.example.validation.annotation.StringDecimalRange;
 import com.example.validation.annotation.StringIntegerRange;
 import com.example.validation.annotation.ValidSortKey;
@@ -69,4 +71,26 @@ public class ProductSearchForm {
      */
     @ValidSortKey
     private String sort;
+    
+    /**
+     * 商品検索用のDtoに変換する
+     * @return 商品検索Dto
+     */
+    public ProductSearchRequestDto toDto() {
+        ProductSearchRequestDto dto = new ProductSearchRequestDto();
+        
+        Integer priceMin = getPriceMin() == null ? null : Integer.parseInt(getPriceMin());
+        Integer priceMax = getPriceMax() == null ? null : Integer.parseInt(getPriceMax());
+        Double rating = getRating() == null ? null : Double.parseDouble(getRating());
+
+        dto.setPage(Integer.parseInt(getPage()));
+        dto.setCategory(getCategory());
+        dto.setKeyword(getKeyword());
+        dto.setPriceMin(priceMin);
+        dto.setPriceMax(priceMax);
+        dto.setRating(rating);
+        dto.setSort(SortKey.valueOf(getSort()));
+
+        return dto;
+    }
 }
