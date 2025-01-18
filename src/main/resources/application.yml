@@ -14,6 +14,8 @@ spring:
       continue-on-error: true
   cache:
     type: simple
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 
 mybatis:
   configuration:
@@ -23,4 +25,15 @@ mybatis:
 #設定値
 registration:
   expiration-time-minutes: 10
+  display-number: 3
+
+opensearch:
+  endpoint: search-mydeployment-xocpwmw5rkutdrrnktzjah6gdm.aos.ap-northeast-1.on.aws
+  username: admin
+  password: Softeni0926@
+
+logging:
+  level:
+    org.apache.http: DEBUG
+    org.opensearch.client: DEBUG
 

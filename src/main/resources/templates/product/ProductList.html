@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>商品検索</title>
+  </head>
+  <body th:with="sr=${result}">
+    <h1>商品検索</h1>
+
+    <form th:action="@{/product}" th:object="${form}" method="get">
+      <label>検索ワード： <input type="text" th:field="*{keyword}" /> </label>
+      <br />
+      <label
+        >カテゴリ：
+        <select th:field="*{category}">
+          <option value="">すべて</option>
+          <option value="カテゴリA">カテゴリA</option>
+          <option value="カテゴリB">カテゴリB</option>
+          <option value="カテゴリC">カテゴリC</option>
+        </select>
+      </label>
+      <br />
+      <label>最小価格 ： <input type="text" th:field="*{priceMin}" /> </label>
+      <br />
+      <label>最大価格 ： <input type="text" th:field="*{priceMax}" /> </label>
+      <br />
+      <label
+        >並び替え：
+        <select th:field="*{sort}">
+          <option value="NEW">新着順</option>
+          <option value="PRICE_ASC">価格の安い順</option>
+          <option value="PRICE_DESC">価格の高い順</option>
+          <option value="RATING">評価順</option>
+        </select>
+      </label>
+
+      <button type="submit">検索</button>
+    </form>
+
+    <hr />
+
+    <h2>検索結果</h2>
+
+    <div th:if="${sr.products.isEmpty()}">
+      <p>該当する商品がありません。</p>
+    </div>
+
+    <!-- 商品リスト表示 -->
+    <div th:each="p : ${sr.products}">
+      <img th:src="${p.imagePath}" />
+      <h3 th:text="${p.productName}"></h3>
+      <p>価格：<span th:text="${p.price}"></span>円</p>
+      <hr />
+    </div>
+
+    <!-- ページネーション -->
+    <div>
+      <!-- 前へ -->
+      <span th:if="${sr.hasPrev}">
+        <a
+          th:href="@{/product(page=${sr.currentPage - 1},
+  keyword=${form.keyword},
+  category=${form.category},
+  priceMin=${form.priceMin},
+  priceMax=${form.priceMax},
+  sort=${form.sort}
+  )}"
+          >&laquo; 前へ</a
+        >
+      </span>
+
+      <!-- ページ番号リンク -->
+      <th:block th:each="num : ${sr.pageNumbers}">
+      <!-- num != currentPage のときはリンクを表示 -->
+  <a th:if="${num != sr.currentPage}"
+     th:text="${num}"
+     th:href="@{/product(
+        page=${num},
+        keyword=${form.keyword},
+        category=${form.category},
+        priceMin=${form.priceMin},
+        priceMax=${form.priceMax},
+        sort=${form.sort}
+     )}">
+  </a>
+  <strong th:if="${num == sr.currentPage}" th:text="${num}"></strong>
+  </th:block>
+
+      <!-- 次へ -->
+      <span th:if="${sr.hasNext}">
+        <a
+          th:href="@{/product(page=${sr.currentPage + 1},
+  keyword=${form.keyword},
+  category=${form.category},
+  priceMin=${form.priceMin},
+  priceMax=${form.priceMax},
+  sort=${form.sort}
+  )}"
+          >&raquo; 次へ</a
+        >
+      </span>
+    </div>
+  </body>
+</html>
