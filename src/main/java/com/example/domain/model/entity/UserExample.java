@@ -1,5 +1,7 @@
 package com.example.domain.model.entity;
 
+import com.example.domain.model.enums.Gender;
+import com.example.domain.model.enums.UserRole;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -696,62 +698,62 @@ public class UserExample {
             return (Criteria) this;
         }
 
-        public Criteria andGenderEqualTo(String value) {
+        public Criteria andGenderEqualTo(Gender value) {
             addCriterion("gender =", value, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderNotEqualTo(String value) {
+        public Criteria andGenderNotEqualTo(Gender value) {
             addCriterion("gender <>", value, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderGreaterThan(String value) {
+        public Criteria andGenderGreaterThan(Gender value) {
             addCriterion("gender >", value, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderGreaterThanOrEqualTo(String value) {
+        public Criteria andGenderGreaterThanOrEqualTo(Gender value) {
             addCriterion("gender >=", value, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderLessThan(String value) {
+        public Criteria andGenderLessThan(Gender value) {
             addCriterion("gender <", value, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderLessThanOrEqualTo(String value) {
+        public Criteria andGenderLessThanOrEqualTo(Gender value) {
             addCriterion("gender <=", value, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderLike(String value) {
+        public Criteria andGenderLike(Gender value) {
             addCriterion("gender like", value, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderNotLike(String value) {
+        public Criteria andGenderNotLike(Gender value) {
             addCriterion("gender not like", value, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderIn(List<String> values) {
+        public Criteria andGenderIn(List<Gender> values) {
             addCriterion("gender in", values, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderNotIn(List<String> values) {
+        public Criteria andGenderNotIn(List<Gender> values) {
             addCriterion("gender not in", values, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderBetween(String value1, String value2) {
+        public Criteria andGenderBetween(Gender value1, Gender value2) {
             addCriterion("gender between", value1, value2, "gender");
             return (Criteria) this;
         }
 
-        public Criteria andGenderNotBetween(String value1, String value2) {
+        public Criteria andGenderNotBetween(Gender value1, Gender value2) {
             addCriterion("gender not between", value1, value2, "gender");
             return (Criteria) this;
         }
@@ -1176,62 +1178,62 @@ public class UserExample {
             return (Criteria) this;
         }
 
-        public Criteria andRoleEqualTo(String value) {
+        public Criteria andRoleEqualTo(UserRole value) {
             addCriterion("role =", value, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleNotEqualTo(String value) {
+        public Criteria andRoleNotEqualTo(UserRole value) {
             addCriterion("role <>", value, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleGreaterThan(String value) {
+        public Criteria andRoleGreaterThan(UserRole value) {
             addCriterion("role >", value, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleGreaterThanOrEqualTo(String value) {
+        public Criteria andRoleGreaterThanOrEqualTo(UserRole value) {
             addCriterion("role >=", value, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleLessThan(String value) {
+        public Criteria andRoleLessThan(UserRole value) {
             addCriterion("role <", value, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleLessThanOrEqualTo(String value) {
+        public Criteria andRoleLessThanOrEqualTo(UserRole value) {
             addCriterion("role <=", value, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleLike(String value) {
+        public Criteria andRoleLike(UserRole value) {
             addCriterion("role like", value, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleNotLike(String value) {
+        public Criteria andRoleNotLike(UserRole value) {
             addCriterion("role not like", value, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleIn(List<String> values) {
+        public Criteria andRoleIn(List<UserRole> values) {
             addCriterion("role in", values, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleNotIn(List<String> values) {
+        public Criteria andRoleNotIn(List<UserRole> values) {
             addCriterion("role not in", values, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleBetween(String value1, String value2) {
+        public Criteria andRoleBetween(UserRole value1, UserRole value2) {
             addCriterion("role between", value1, value2, "role");
             return (Criteria) this;
         }
 
-        public Criteria andRoleNotBetween(String value1, String value2) {
+        public Criteria andRoleNotBetween(UserRole value1, UserRole value2) {
             addCriterion("role not between", value1, value2, "role");
             return (Criteria) this;
         }

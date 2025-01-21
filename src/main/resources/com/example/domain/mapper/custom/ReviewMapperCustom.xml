@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.domain.mapper.ReviewMapperCustom">
+	<!-- (1) 平均値 & 件数 -->
+	<select id="selectReviewStats" resultType="com.example.domain.model.dto.ReviewStatusDto">
+		SELECT
+		AVG(rating) AS
+		averageRating,
+		COUNT(*) AS reviewCount
+		FROM review
+		WHERE product_id =
+		#{productId}
+	</select>
+
+	<!-- (2) 新着3件 -->
+	<select id="selectRecentReviews"
+		resultType="com.example.domain.model.dto.ReviewDto">
+		SELECT
+		rating,
+		review_text,
+		created_at
+		FROM review
+		WHERE
+		product_id = #{productId}
+		ORDER BY created_at DESC
+		LIMIT 3
+	</select>
+
+</mapper>

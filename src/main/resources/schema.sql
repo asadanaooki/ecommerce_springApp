@@ -43,6 +43,7 @@ create table if not exists product(
   product_name        VARCHAR(100)   NOT NULL,
   price               INT            NOT NULL,
   product_description VARCHAR(1000)  NOT NULL,
+  stock               INT            NOT NULL,
   category_id         CHAR(60)       NOT NULL,
   start_sale_date     DATE           NOT NULL,
   end_sale_date DATE not null default '9999-12-31',

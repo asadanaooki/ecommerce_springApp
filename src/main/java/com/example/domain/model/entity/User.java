@@ -1,10 +1,9 @@
 package com.example.domain.model.entity;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import com.example.domain.model.enums.Gender;
 import com.example.domain.model.enums.UserRole;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class User {
     /**

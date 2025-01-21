@@ -25,7 +25,7 @@
 
 		<javaTypeResolver>
 			<property name="forceBigDecimals" value="false" />
-			 <property name="useJSR310Types" value="true" />
+			<property name="useJSR310Types" value="true" />
 		</javaTypeResolver>
 
 		<!-- Entityの生成場所 -->
@@ -44,10 +44,15 @@
 			targetPackage="com.example.domain.mapper"
 			targetProject="src/main/java/" type="XMLMAPPER" />
 
-<!--TODO: 将来的にフォルダを分ける-->
+		<!--TODO: 将来的にフォルダを分ける -->
 		<!-- 生成対象のテーブル -->
-		<table tableName="user" />
-		<table tableName="prefecture"/>
+		<table tableName="user">
+			<columnOverride column="role"
+				javaType="com.example.domain.model.enums.UserRole" />
+			<columnOverride column="gender"
+				javaType="com.example.domain.model.enums.Gender" />
+		</table>
+		<table tableName="prefecture" />
 		<table tableName="product" />
 		<table tableName="category" />
 		<table tableName="review" />
